@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Lenis from "lenis";
 import { useEffect } from "react";
 import { AuthProvider } from "./context/AuthContext";
+import { PublicOnly, RequireAuth } from "./components/RouteGuards";
 import Landing from "./pages/Landing";
 import Analyze from "./pages/Analyze";
 import Pricing from "./pages/Pricing";
@@ -28,12 +29,17 @@ export default function App() {
     <AuthProvider>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/analyze" element={<Analyze />} />
+          {/* Marketing et formulaires : interdits une fois connecté */}
+          <Route path="/" element={<PublicOnly><Landing /></PublicOnly>} />
+          <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
+          <Route path="/signup" element={<PublicOnly><Signup /></PublicOnly>} />
+
+          {/* Compte : un visiteur est renvoyé vers l'inscription, puis ramené ici */}
+          <Route path="/analyze" element={<RequireAuth to="/signup"><Analyze /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+
+          {/* Les forfaits se consultent dans les deux cas (page marketing ou coquille compte) */}
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </HashRouter>

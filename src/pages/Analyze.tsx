@@ -114,7 +114,7 @@ export default function Analyze() {
     <div className="min-h-screen bg-page text-ink">
       <Navbar />
       <main className="mx-auto max-w-4xl px-5 pb-24 pt-28 sm:px-8">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-ink/50 hover:text-accent">
+        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-ink/50 hover:text-accent">
           <ArrowLeft size={16} /> Retour
         </Link>
         <h1 className="font-display mt-6 text-4xl font-bold text-ink">Analyse de <span className="text-gradient-gold">terrain</span></h1>

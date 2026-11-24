@@ -71,6 +71,24 @@ Without it the API expects a Neon HTTP endpoint.
 Sessions are HS256 JWTs (`Authorization: Bearer …`), 7-day expiry, stored in
 `localStorage` under `senagro.session`.
 
+## Who can open what
+
+`src/components/RouteGuards.tsx` keeps the two halves of the product apart:
+
+| Route | Visitor | Signed in |
+|---|---|---|
+| `/` `/login` `/signup` | page | redirected to `/dashboard` |
+| `/dashboard` | redirected to `/login` | page |
+| `/analyze` | redirected to `/signup` | page |
+| `/pricing` | marketing page | same page inside the account shell |
+
+The guard waits for `/api/auth` before deciding, so a slow session check shows a
+spinner instead of flashing the marketing page. The destination a visitor asked
+for travels in router state and is re-opened after signup/login, but only if it
+is an internal path (`safeNext` drops `//host` and absolute URLs). A forged or
+expired token in `localStorage` is cleared by `AuthProvider` and the guard sends
+the visitor to `/login`.
+
 ## Dashboard
 
 `/#/dashboard` is an app shell rather than a marketing page: a fixed left rail

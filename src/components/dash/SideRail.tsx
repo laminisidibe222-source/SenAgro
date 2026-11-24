@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { ArrowUpRight, CreditCard, Home, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
+import { ArrowUpRight, CreditCard, LayoutDashboard, LogOut, Sparkles } from "lucide-react";
 import { LogoMark } from "../Logo";
 import type { PlanInfo } from "../../lib/api";
 
@@ -7,7 +7,6 @@ const NAV = [
   { to: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
   { to: "/analyze", label: "Nouvelle analyse", icon: Sparkles },
   { to: "/pricing", label: "Forfaits", icon: CreditCard },
-  { to: "/", label: "Site public", icon: Home },
 ];
 
 export default function SideRail({

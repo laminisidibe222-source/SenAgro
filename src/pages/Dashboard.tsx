@@ -8,37 +8,24 @@ import {
   CreditCard,
   FlaskConical,
   Gauge,
-  Loader2,
-  LogOut,
-  Menu,
   RefreshCw,
   Sprout,
-  X,
 } from "lucide-react";
-import SideRail from "../components/dash/SideRail";
+import AppShell from "../components/dash/AppShell";
 import StatCard from "../components/dash/StatCard";
 import ScoreRing from "../components/dash/ScoreRing";
 import ScoreBars from "../components/dash/ScoreBars";
-import { Logo } from "../components/Logo";
 import { GOAL_LABELS, SOIL_LABELS, num, shortDate, type SavedAnalysis } from "../components/dash/types";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, getPlanInfo, type PlanInfo } from "../lib/api";
 
-const MOBILE_LINKS = [
-  { to: "/dashboard", label: "Tableau de bord" },
-  { to: "/analyze", label: "Nouvelle analyse" },
-  { to: "/pricing", label: "Forfaits" },
-  { to: "/", label: "Site public" },
-];
-
 export default function Dashboard() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [analyses, setAnalyses] = useState<SavedAnalysis[] | null>(null);
   const [plan, setPlan] = useState<PlanInfo | null>(null);
   const [fetching, setFetching] = useState(true);
   const [failed, setFailed] = useState<string | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -95,77 +82,16 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  if (authLoading) {
-    return (
-      <div className="grid min-h-screen place-items-center bg-page">
-        <Loader2 size={26} className="animate-spin text-accent" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="grid min-h-screen place-items-center bg-page px-5 text-ink">
-        <div className="glass w-full max-w-sm rounded-3xl p-8 text-center">
-          <Sprout size={28} className="mx-auto text-accent" />
-          <h1 className="font-display mt-3 text-2xl font-bold">Espace producteur</h1>
-          <p className="mt-2 text-sm text-ink-soft">Connectez-vous pour retrouver vos parcelles et vos analyses.</p>
-          <Link to="/login" className="btn-gold mt-6 inline-flex w-full justify-center">
-            Se connecter
-          </Link>
-          <Link to="/" className="mt-3 inline-block text-xs text-ink/45 hover:text-accent">
-            Retour au site
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // RequireAuth garantit un compte connecté ; ce garde-fou évite juste un crash
+  // pendant le frame où la session expire.
+  if (!user) return null;
 
   const firstName = (user.name || user.email.split("@")[0] || "").split(" ")[0];
   const today = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
   return (
-    <div className="min-h-screen bg-page text-ink">
-      <SideRail plan={plan} email={user.email} onSignOut={signOutNow} />
+    <AppShell plan={plan} email={user.email} onSignOut={signOutNow}>
 
-      {/* Barre mobile */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-ink/8 bg-card/95 px-4 py-3 backdrop-blur-md lg:hidden">
-        <Link to="/dashboard" aria-label="Accueil du tableau de bord">
-          <Logo size={30} />
-        </Link>
-        <button
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={menuOpen}
-          className="grid h-10 w-10 place-items-center rounded-xl border border-ink/10 text-ink"
-        >
-          {menuOpen ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      </header>
-
-      {menuOpen && (
-        <div className="fixed inset-x-0 top-[57px] z-40 border-b border-ink/10 bg-card p-3 shadow-lg lg:hidden">
-          {MOBILE_LINKS.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              onClick={() => setMenuOpen(false)}
-              className="block rounded-xl px-3 py-2.5 text-sm font-medium text-ink/70 hover:bg-ink/[0.04]"
-            >
-              {l.label}
-            </Link>
-          ))}
-          <button
-            onClick={signOutNow}
-            className="mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50"
-          >
-            <LogOut size={15} /> Se déconnecter
-          </button>
-        </div>
-      )}
-
-      <main className="lg:pl-[248px]">
-        <div className="mx-auto max-w-6xl px-5 pb-20 pt-6 sm:px-8 lg:pt-9">
           {/* En-tête */}
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -460,8 +386,6 @@ export default function Dashboard() {
               )}
             </>
           )}
-        </div>
-      </main>
-    </div>
+    </AppShell>
   );
 }

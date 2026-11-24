@@ -1,11 +1,14 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Leaf, ArrowRight, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { safeNext } from "../components/RouteGuards";
 
 export default function Signup() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const next = safeNext((location.state as { from?: string } | null)?.from);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +23,7 @@ export default function Signup() {
     const { error: err } = await signUp(name.trim(), email.trim().toLowerCase(), password);
     setLoading(false);
     if (err) setError(err);
-    else navigate("/dashboard");
+    else navigate(next, { replace: true });
   };
 
   return (

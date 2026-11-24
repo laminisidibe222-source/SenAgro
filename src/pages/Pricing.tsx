@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check, Loader2, AlertCircle, BadgeCheck, ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AppShell from "../components/dash/AppShell";
 import { useAuth } from "../context/AuthContext";
 import { getPlanInfo, startCheckout, type PlanInfo } from "../lib/api";
 
@@ -43,7 +44,7 @@ const PLANS = [
 ];
 
 export default function Pricing() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const [loading, setLoading] = useState<string | null>(null);
@@ -87,7 +88,7 @@ export default function Pricing() {
 
   const buy = async (planId: "pro" | "elite") => {
     if (!user) {
-      navigate("/signup");
+      navigate("/signup", { state: { from: `/pricing?plan=${planId}` } });
       return;
     }
     setLoading(planId);
@@ -102,11 +103,12 @@ export default function Pricing() {
   };
 
   const currentPlan = plan?.plan;
+  const wanted = params.get("plan");
+  const wantedPlan = PLANS.find((p) => p.id === wanted && p.payable) ?? null;
+  const resume = Boolean(user && wantedPlan && currentPlan !== wantedPlan?.id);
 
-  return (
-    <div className="grain min-h-screen bg-page text-ink">
-      <Navbar />
-      <main className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8">
+  const content = (
+    <main className={user ? "" : "mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-8"}>
         <p className="mono text-center text-[10px] uppercase tracking-[0.3em] text-accent">Tarifs</p>
         <h1 className="font-display mt-4 text-center text-4xl font-bold text-ink sm:text-6xl">De belles terres,<br /><span className="text-gradient-gold">une meilleure science.</span></h1>
         <p className="mx-auto mt-4 max-w-md text-center text-ink-soft">Payez avec SasPay — Wave, Orange Money ou carte bancaire. Forfait activé dès le paiement.</p>
@@ -117,6 +119,21 @@ export default function Pricing() {
             Forfait actuel : {plan.limits.label}
             {plan.currentPeriodEnd ? ` · jusqu'au ${new Date(plan.currentPeriodEnd).toLocaleDateString("fr-FR")}` : ""}
           </p>
+        )}
+
+        {resume && (
+          <div className="mx-auto mt-5 flex max-w-xl flex-wrap items-center justify-center gap-3 rounded-2xl border border-gold-400/40 bg-gold-400/10 p-4 text-sm text-accent">
+            <span>
+              Votre compte est prêt : reprenez le paiement du forfait <strong>{wantedPlan?.name}</strong>.
+            </span>
+            <button
+              onClick={() => buy(wantedPlan!.id as "pro" | "elite")}
+              disabled={loading === wantedPlan!.id}
+              className="rounded-full bg-gold-400 px-4 py-1.5 text-xs font-bold text-[#241a05] disabled:opacity-60"
+            >
+              {loading === wantedPlan!.id ? "Ouverture…" : "Continuer"}
+            </button>
+          </div>
         )}
 
         {confirming && (
@@ -171,7 +188,28 @@ export default function Pricing() {
           </div>
         )}
         <p className="mono mt-8 text-center text-[9px] uppercase tracking-widest text-ink/35">Sécurisé par SasPay · Wave · Orange Money · Carte</p>
-      </main>
+    </main>
+  );
+
+  if (user) {
+    return (
+      <AppShell
+        plan={plan}
+        email={user.email}
+        onSignOut={() => {
+          signOut();
+          navigate("/");
+        }}
+      >
+        {content}
+      </AppShell>
+    );
+  }
+
+  return (
+    <div className="grain min-h-screen bg-page text-ink">
+      <Navbar />
+      {content}
       <Footer />
     </div>
   );
