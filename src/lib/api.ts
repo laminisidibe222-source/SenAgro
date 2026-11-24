@@ -30,10 +30,15 @@ export async function apiFetch(
     const token = getStoredSession()?.access_token;
     if (token) headers.Authorization = `Bearer ${token}`;
   }
+  // A suspended Neon compute can leave the request hanging; fail visibly instead
+  // of leaving the dashboard on its skeleton forever.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20_000);
   try {
     const res = await fetch(path, {
       method,
       headers,
+      signal: controller.signal,
       body: method === "GET" ? undefined : JSON.stringify(body ?? {}),
     });
     let payload: any = null;
@@ -53,8 +58,11 @@ export async function apiFetch(
     }
     return { data: payload, error: null };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Échec du réseau.";
+    const aborted = err instanceof DOMException && err.name === "AbortError";
+    const message = aborted ? "Le serveur met trop de temps à répondre. Réessayez." : err instanceof Error ? err.message : "Échec du réseau.";
     return { data: null, error: { message } };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 

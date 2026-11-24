@@ -71,6 +71,17 @@ Without it the API expects a Neon HTTP endpoint.
 Sessions are HS256 JWTs (`Authorization: Bearer …`), 7-day expiry, stored in
 `localStorage` under `senagro.session`.
 
+## Dashboard
+
+`/#/dashboard` is an app shell rather than a marketing page: a fixed left rail
+(nav, plan quota meter, account) and a content column of nine-to-five cards —
+a dark "exploitation" card with surface area and quota, a radial quality gauge,
+three KPI tiles, a score-history bar chart, a checklist that tracks onboarding,
+and the analysis table (card rows under 640px, table above). All of it is derived
+from `GET /api/analyses` + `GET /api/subscription`; there is no invented data, so
+a brand new account sees designed empty states instead of fake numbers. The
+layout is checked at 390 px and 1440 px with zero horizontal overflow.
+
 ## Plans and quotas
 
 | Plan | Price | Analyses per 30 days |
