@@ -72,7 +72,7 @@ export default function Login() {
         <div className="absolute inset-0 bg-[#141a10]" />
         <div
           className="absolute inset-0 bg-cover bg-center opacity-60"
-          style={{ backgroundImage: "url('/scenes/farmland.jpg')" }}
+          style={{ backgroundImage: "url('/scenes/senegal-field.jpg')" }}
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(16,15,12,0.9)_100%)]" />
         <div className="relative flex h-full flex-col justify-end p-12">

@@ -29,16 +29,17 @@ export default function ProblemSolution() {
     <section ref={trackRef} className="relative h-[220vh] bg-[#100f0c]" aria-label="Avant et après">
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* AVANT — champ sec et souffrant */}
-        <div
-          className="absolute inset-0 bg-[#1a150f]"
-          style={{ clipPath: `inset(0 ${100 - wipe}% 0 0)` }}
-        >
+        <div className="absolute inset-0 bg-[#1a150f]">
           <div
-            className="absolute inset-0 bg-cover bg-center opacity-70 grayscale"
-            style={{ backgroundImage: "url('/scenes/dry-field.jpg')" }}
+            className="absolute inset-0 bg-cover bg-center opacity-80 saturate-[0.55]"
+            style={{ backgroundImage: "url('/scenes/sahel-dry.jpg')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-          <div className="absolute bottom-24 left-5 max-w-md sm:left-16">
+          <div
+            className="absolute bottom-24 left-5 max-w-md sm:left-16"
+            /* fade the "before" copy out before the wipe reaches it, so it is never cut in half */
+            style={{ opacity: Math.min(1, Math.max(0, (62 - wipe) / 17)) }}
+          >
             <p className="mono text-[10px] uppercase tracking-[0.3em] text-red-400">Sans SenAgro</p>
             <h2 className="font-display mt-3 text-3xl font-bold text-white/90 sm:text-5xl">
               Des saisons à l'aveugle,<br />des récoltes perdues.
@@ -49,13 +50,15 @@ export default function ProblemSolution() {
           </div>
         </div>
 
-        {/* APRÈS — champ vibrant et données surimposées */}
-        <div className="absolute inset-0 bg-[#141a10]">
+        {/* APRÈS — champ vibrant et données surimposées.
+            This layer sits on top, so the wipe clips it from the left edge and the
+            green field (with its right-hand copy) grows in as you scroll. */}
+        <div className="absolute inset-0 bg-[#141a10]" style={{ clipPath: `inset(0 0 0 ${100 - wipe}%)` }}>
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/scenes/farmland.jpg')" }}
+            style={{ backgroundImage: "url('/scenes/senegal-field.jpg')" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-l from-black/75 via-black/35 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-l from-black/85 via-black/55 to-black/10" />
           {/* Lignes topographiques lumineuses */}
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden>
             {[0, 1, 2, 3, 4].map((i) => (
@@ -74,11 +77,11 @@ export default function ProblemSolution() {
             className="absolute right-5 top-28 max-w-md text-right sm:right-16"
             style={{ opacity: reveal, transform: `translateY(${(1 - reveal) * 40}px)` }}
           >
-            <p className="mono text-[10px] uppercase tracking-[0.3em] text-accent">Avec SenAgro</p>
+            <p className="mono text-[10px] uppercase tracking-[0.3em] text-gold-300">Avec SenAgro</p>
             <h2 className="font-display mt-3 text-3xl font-bold text-white sm:text-5xl">
-              La terre vous envoie<br />des signaux.<br /><span className="text-gradient-gold">SenAgro vous donne la traduction.</span>
+              La terre vous envoie<br />des signaux.<br /><span className="text-gradient-gold-bright">SenAgro vous donne la traduction.</span>
             </h2>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-400/35 bg-gold-400/10 px-4 py-2 text-xs font-semibold text-accent">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-400/40 bg-black/35 px-4 py-2 text-xs font-semibold text-gold-300 backdrop-blur-sm">
               <Leaf size={14} /> +18 % de rendement moyen · −32 % de gaspillage d'eau
             </div>
           </div>
@@ -87,7 +90,7 @@ export default function ProblemSolution() {
         {/* Ligne de balayage */}
         <div
           className="absolute inset-y-0 z-10 w-[3px] bg-gradient-to-b from-transparent via-gold-400 to-transparent shadow-[0_0_25px_rgba(245,197,68,0.8)]"
-          style={{ left: `calc(${wipe}% - 1.5px)` }}
+          style={{ left: `calc(${100 - wipe}% - 1.5px)` }}
         />
 
         {/* Indice de défilement */}

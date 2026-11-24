@@ -138,6 +138,18 @@ parcels, analyses and subscriptions.
   uses non-additive blending because additive particles are invisible on white.
 - Photography is self-hosted: `public/crops/*.jpg` (7 crops) and
   `public/scenes/*.jpg` (2 backgrounds), referenced by `src/lib/crops.ts` and the
-  auth/before-after panels. Sources are Wikimedia Commons — check and add the
-  per-file author/licence credits before a commercial launch.
+  auth/before-after panels. Crop shots come from Wikimedia Commons; check the
+  per-file credits before a commercial launch.
+
+### Photo credits (scene backgrounds)
+
+| File | Shows | Author | Licence |
+| --- | --- | --- | --- |
+| `senegal-field.jpg` | Peanut field with palms, Casamance, Senegal ("après") | Ajocom | CC BY-SA 4.0 |
+| `sahel-dry.jpg` | Bare, degraded sandy farmland, Bermo, Niger ("avant") | Ibrahimassoumane | CC0 |
+
+Sources:
+`commons.wikimedia.org/wiki/File:Champ_d'arachide_en_Casamance.JPG` and
+`commons.wikimedia.org/wiki/File:Bermo_commune_02.jpg`. The footer carries the
+attribution inline; keep it if you swap the files.
 - Layout is checked at 390 / 1440 px with no horizontal overflow.

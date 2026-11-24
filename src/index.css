@@ -52,6 +52,14 @@ body {
     -webkit-text-fill-color: transparent;
     animation: gradient-shift 5s ease-in-out infinite;
   }
+  /* Same gradient, for text on dark photos where the ink-toned version vanishes. */
+  .text-gradient-gold-bright {
+    background: linear-gradient(115deg, #ffe08a 0%, #f5c544 45%, #e5a834 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 5s ease-in-out infinite;
+  }
   .grain::after {
     content: "";
     position: fixed;

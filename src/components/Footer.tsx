@@ -33,7 +33,20 @@ export default function Footer() {
           ))}
         </div>
         <div className="mt-12 flex items-center justify-between gap-4 border-t border-ink/5 pt-6 text-xs text-ink/35">
-          <p>© {new Date().getFullYear()} SenAgro. Cultivé avec des données.</p>
+          <div>
+            <p>© {new Date().getFullYear()} SenAgro. Cultivé avec des données.</p>
+            <p className="mt-1.5">
+              Photos :{" "}
+              <a href="https://commons.wikimedia.org/wiki/File:Champ_d%27arachide_en_Casamance.JPG" target="_blank" rel="noreferrer" className="underline decoration-ink/20 underline-offset-2 hover:text-accent">
+                Ajocom (CC BY-SA 4.0)
+              </a>
+              {" · "}
+              <a href="https://commons.wikimedia.org/wiki/File:Bermo_commune_02.jpg" target="_blank" rel="noreferrer" className="underline decoration-ink/20 underline-offset-2 hover:text-accent">
+                Ibrahimassoumane (CC0)
+              </a>
+              {" · "}Wikimedia Commons
+            </p>
+          </div>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             aria-label="Haut de page"
