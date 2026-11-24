@@ -22,3 +22,6 @@ _*.png
 
 # vercel
 .vercel
+
+# QA screenshots
+shots/
