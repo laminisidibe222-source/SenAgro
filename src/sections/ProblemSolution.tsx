@@ -35,15 +35,15 @@ export default function ProblemSolution() {
         >
           <div
             className="absolute inset-0 bg-cover bg-center opacity-70 grayscale"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1595825965241-0b475c0d9e08?w=1600&q=80')" }}
+            style={{ backgroundImage: "url('/scenes/dry-field.jpg')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
           <div className="absolute bottom-24 left-5 max-w-md sm:left-16">
             <p className="mono text-[10px] uppercase tracking-[0.3em] text-red-400">Sans SenAgro</p>
-            <h2 className="font-display mt-3 text-3xl font-bold text-cream/85 sm:text-5xl">
+            <h2 className="font-display mt-3 text-3xl font-bold text-white/90 sm:text-5xl">
               Des saisons à l'aveugle,<br />des récoltes perdues.
             </h2>
-            <p className="mt-3 text-sm text-cream/55">
+            <p className="mt-3 text-sm text-white/65">
               Mauvaise culture, mauvais sol, mauvaise semaine — argent brûlé et terre morte.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function ProblemSolution() {
         <div className="absolute inset-0 bg-[#141a10]">
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500076656116-558758c991c1?w=1600&q=80')" }}
+            style={{ backgroundImage: "url('/scenes/farmland.jpg')" }}
           />
           <div className="absolute inset-0 bg-gradient-to-l from-black/75 via-black/35 to-transparent" />
           {/* Lignes topographiques lumineuses */}
@@ -74,11 +74,11 @@ export default function ProblemSolution() {
             className="absolute right-5 top-28 max-w-md text-right sm:right-16"
             style={{ opacity: reveal, transform: `translateY(${(1 - reveal) * 40}px)` }}
           >
-            <p className="mono text-[10px] uppercase tracking-[0.3em] text-gold-400">Avec SenAgro</p>
-            <h2 className="font-display mt-3 text-3xl font-bold text-cream sm:text-5xl">
+            <p className="mono text-[10px] uppercase tracking-[0.3em] text-accent">Avec SenAgro</p>
+            <h2 className="font-display mt-3 text-3xl font-bold text-white sm:text-5xl">
               La terre vous envoie<br />des signaux.<br /><span className="text-gradient-gold">SenAgro vous donne la traduction.</span>
             </h2>
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-400/35 bg-gold-400/10 px-4 py-2 text-xs font-semibold text-gold-300">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-400/35 bg-gold-400/10 px-4 py-2 text-xs font-semibold text-accent">
               <Leaf size={14} /> +18 % de rendement moyen · −32 % de gaspillage d'eau
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function ProblemSolution() {
         {/* Indice de défilement */}
         {progress < 0.08 && (
           <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2">
-            <div className="mono animate-float-slow text-[10px] uppercase tracking-[0.3em] text-cream/50">Faites défiler pour révéler →</div>
+            <div className="mono animate-float-slow text-[10px] uppercase tracking-[0.3em] text-white/60">Faites défiler pour révéler →</div>
           </div>
         )}
       </div>

@@ -4,14 +4,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        charcoal: "#14120E",
-        panel: "#1C1A15",
-        panel2: "#23211A",
-        olive: "#2A2E21",
+        // Light theme: warm paper page, white cards, ink text.
+        page: "#FAF8F2",
+        card: "#FFFFFF",
+        card2: "#F4F1E8",
+        sand: "#EAE4D6",
+        ink: "#1B1813",
+        "ink-soft": "#6B6353",
+        // Gold stays the brand fill; `accent` is the readable version on white.
         gold: { 300: "#FFE08A", 400: "#F5C544", 500: "#E5A834" },
-        leaf: "#7BE08B",
-        cream: "#F5F0E6",
-        mute: "#A49B85",
+        accent: "#7A5A08",
+        leaf: "#2F7D46",
+        // Legacy names kept as aliases so nothing renders unstyled.
+        charcoal: "#FAF8F2",
+        panel: "#FFFFFF",
+        panel2: "#F4F1E8",
+        olive: "#EAE4D6",
+        cream: "#1B1813",
+        mute: "#6B6353",
       },
       fontFamily: {
         display: ["'Space Grotesk'", "Inter", "system-ui", "sans-serif"],

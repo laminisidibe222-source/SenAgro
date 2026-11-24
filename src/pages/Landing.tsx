@@ -9,7 +9,7 @@ import CTASection from "../sections/CTASection";
 
 export default function Landing() {
   return (
-    <div className="grain bg-charcoal soil-dots min-h-screen text-cream">
+    <div className="grain bg-page soil-dots min-h-screen text-ink">
       <Navbar />
       <main>
         <Hero />

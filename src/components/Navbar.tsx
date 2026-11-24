@@ -27,26 +27,26 @@ export default function Navbar() {
       <nav
         aria-label="Navigation principale"
         className={`mx-auto flex max-w-7xl items-center justify-between px-5 transition-all duration-500 sm:px-8 ${
-          scrolled ? "mt-3 rounded-2xl border border-white/10 bg-[#171512]/85 py-3 backdrop-blur-2xl" : "py-5"
+          scrolled ? "mt-3 rounded-2xl border border-ink/10 bg-white/85 py-3 backdrop-blur-2xl" : "py-5"
         }`}
       >
         <Link to="/" className="group flex items-center gap-2.5" aria-label="SenAgro — accueil">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 text-[#2a1f05] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
             <Sprout size={22} strokeWidth={2.2} />
           </span>
-          <span className="font-display text-2xl font-bold tracking-tight text-cream">
-            Sen<span className="text-gold-400">Agro</span>
+          <span className="font-display text-2xl font-bold tracking-tight text-ink">
+            Sen<span className="text-accent">Agro</span>
           </span>
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
           {links.map((l) =>
             l.href.startsWith("/") ? (
-              <Link key={l.href} to={l.href} className="text-sm font-medium text-cream/60 transition-colors hover:text-gold-300">
+              <Link key={l.href} to={l.href} className="text-sm font-medium text-ink/60 transition-colors hover:text-accent">
                 {l.label}
               </Link>
             ) : (
-              <a key={l.href} href={l.href} className="text-sm font-medium text-cream/60 transition-colors hover:text-gold-300">
+              <a key={l.href} href={l.href} className="text-sm font-medium text-ink/60 transition-colors hover:text-accent">
                 {l.label}
               </a>
             )
@@ -56,15 +56,15 @@ export default function Navbar() {
         <div className="hidden md:flex md:items-center md:gap-4">
           {user ? (
             <>
-              <Link to="/dashboard" className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-cream/80 hover:border-gold-400/40">
+              <Link to="/dashboard" className="flex items-center gap-2 rounded-full border border-ink/10 px-4 py-2 text-sm text-ink/80 hover:border-gold-400/40">
                 <User size={15} /> Mon compte
               </Link>
-              <button onClick={() => { signOut(); navigate("/"); }} className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-cream/80 hover:border-red-400/40 hover:text-red-300" aria-label="Se déconnecter">
+              <button onClick={() => { signOut(); navigate("/"); }} className="flex items-center gap-2 rounded-full border border-ink/10 px-4 py-2 text-sm text-ink/80 hover:border-red-400/40 hover:text-red-300" aria-label="Se déconnecter">
                 <LogOut size={15} /> Déconnexion
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-sm font-medium text-cream/80 hover:text-gold-300">
+            <Link to="/login" className="text-sm font-medium text-ink/80 hover:text-accent">
               Se connecter
             </Link>
           )}
@@ -77,31 +77,31 @@ export default function Navbar() {
           onClick={() => setOpen((v) => !v)}
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
-          className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 text-cream md:hidden"
+          className="grid h-11 w-11 place-items-center rounded-xl border border-ink/10 text-ink md:hidden"
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </nav>
 
       {open && (
-        <div className="mx-4 mt-2 rounded-2xl border border-white/10 bg-[#171512]/97 p-5 backdrop-blur-2xl md:hidden">
+        <div className="mx-4 mt-2 rounded-2xl border border-ink/10 bg-white/95 p-5 backdrop-blur-2xl md:hidden">
           <div className="flex flex-col gap-1">
             {links.map((l) =>
               l.href.startsWith("/") ? (
-                <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-base font-medium text-cream/80 hover:bg-white/5">
+                <Link key={l.href} to={l.href} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-base font-medium text-ink/80 hover:bg-white/5">
                   {l.label}
                 </Link>
               ) : (
-                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-base font-medium text-cream/80 hover:bg-white/5">
+                <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-xl px-4 py-3 text-base font-medium text-ink/80 hover:bg-white/5">
                   {l.label}
                 </a>
               )
             )}
           </div>
-          <div className="mt-3 border-t border-white/10 pt-3">
+          <div className="mt-3 border-t border-ink/10 pt-3">
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-cream/85 hover:bg-white/5">
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-ink/85 hover:bg-white/5">
                   Mon compte
                 </Link>
                 <button onClick={() => { signOut(); setOpen(false); navigate("/"); }} className="block w-full rounded-xl px-4 py-3 text-left text-base font-medium text-red-300 hover:bg-white/5">
@@ -109,7 +109,7 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <Link to="/login" onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-cream/85 hover:bg-white/5">
+              <Link to="/login" onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 text-base font-medium text-ink/85 hover:bg-white/5">
                 Se connecter
               </Link>
             )}

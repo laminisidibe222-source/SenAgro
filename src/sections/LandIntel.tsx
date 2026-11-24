@@ -57,21 +57,21 @@ export default function LandIntel() {
   const gaugeOffset = C - (animatedHealth / 100) * C;
 
   return (
-    <section id="land" className="relative overflow-hidden bg-[#12110d] py-24 lg:py-28">
+    <section id="land" className="relative overflow-hidden bg-page py-24 lg:py-28">
       <div className="pointer-events-none absolute -left-40 top-1/3 h-96 w-96 rounded-full bg-gold-400/[0.05] blur-3xl" />
       <div className="pointer-events-none absolute -right-40 bottom-0 h-96 w-96 rounded-full bg-leaf/[0.04] blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="mb-12 max-w-2xl">
-          <p className="mono mb-4 text-[10px] uppercase tracking-[0.3em] text-gold-400">Intelligence foncière · Delta Verde</p>
-          <h2 className="font-display text-3xl font-bold text-cream sm:text-5xl">
+          <p className="mono mb-4 text-[10px] uppercase tracking-[0.3em] text-accent">Intelligence foncière · Delta Verde</p>
+          <h2 className="font-display text-3xl font-bold text-ink sm:text-5xl">
             Cliquez sur une parcelle. <span className="text-gradient-gold">Lisez son avenir.</span>
           </h2>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1.25fr_1fr]">
           {/* ── Carte topographique SVG ── */}
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#171b13]">
+          <div className="relative overflow-hidden rounded-3xl border border-ink/10 bg-[#171b13]">
             <svg viewBox="0 0 560 480" className="h-full w-full" role="application" aria-label="Carte des parcelles du Delta Verde">
               <defs>
                 <linearGradient id="terr" x1="0" y1="0" x2="1" y2="1">
@@ -136,19 +136,19 @@ export default function LandIntel() {
               <line x1="470" y1="62" x2="540" y2="62" stroke="#f5f0e6" strokeOpacity="0.6" strokeWidth="2" />
               <text x="505" y="78" textAnchor="middle" fill="#f5f0e6" opacity="0.5" fontSize="9" fontFamily="'JetBrains Mono'">1 KM</text>
             </svg>
-            <div className="absolute bottom-3 left-4 mono text-[10px] uppercase tracking-widest text-cream/40">
+            <div className="absolute bottom-3 left-4 mono text-[10px] uppercase tracking-widest text-ink/40">
               Delta Verde · 12 zones agro · En direct
             </div>
           </div>
 
           {/* ── Panneau de données flottant ── */}
-          <div className="flex flex-col gap-4 rounded-3xl border border-gold-400/20 bg-[#1c1a15]/90 p-6 backdrop-blur-xl">
-            <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+          <div className="flex flex-col gap-4 rounded-3xl border border-ink/10 bg-card/95 p-6 backdrop-blur-xl">
+            <div className="flex items-start justify-between gap-4 border-b border-ink/10 pb-4">
               <div>
-                <h3 className="font-display text-lg font-bold text-cream">{selected.name}</h3>
-                <p className="mono mt-1 text-[10px] uppercase tracking-widest text-cream/45">{selected.ha} ha · {selected.soil} · pH {selected.ph}</p>
+                <h3 className="font-display text-lg font-bold text-ink">{selected.name}</h3>
+                <p className="mono mt-1 text-[10px] uppercase tracking-widest text-ink/45">{selected.ha} ha · {selected.soil} · pH {selected.ph}</p>
               </div>
-              <Link to="/analyze" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-gold-400/30 text-gold-400 transition-all hover:scale-110" aria-label="Analyser cette parcelle">
+              <Link to="/analyze" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-gold-400/30 text-accent transition-all hover:scale-110" aria-label="Analyser cette parcelle">
                 <ChevronRight size={20} />
               </Link>
             </div>
@@ -165,12 +165,12 @@ export default function LandIntel() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-3xl font-bold text-cream">{animatedHealth}</span>
-                  <span className="mono text-[8px] uppercase tracking-widest text-gold-400">Santé</span>
+                  <span className="font-display text-3xl font-bold text-ink">{animatedHealth}</span>
+                  <span className="mono text-[8px] uppercase tracking-widest text-accent">Santé</span>
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="mono text-[9px] uppercase tracking-widest text-cream/45">Recommandé</p>
+                <p className="mono text-[9px] uppercase tracking-widest text-ink/45">Recommandé</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {selected.crop.map((c, i) => (
                     <span key={c} className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${i === 0 ? "bg-gold-400 text-[#241a05]" : "border border-leaf/35 text-leaf"}`}>
@@ -181,18 +181,18 @@ export default function LandIntel() {
                 {/* Remplissage de la feuille — durabilité */}
                 <div className="mt-3 flex items-center gap-2">
                   <Leaf size={15} className="text-leaf" fill="#7be08b" fillOpacity={selected.sustainability / 100} />
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-olive">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-sand">
                     <div className="h-full rounded-full bg-leaf transition-all duration-700" style={{ width: `${selected.sustainability}%` }} />
                   </div>
-                  <span className="mono text-[10px] text-cream/55">{selected.sustainability}%</span>
+                  <span className="mono text-[10px] text-ink/55">{selected.sustainability}%</span>
                 </div>
               </div>
             </div>
 
             {/* Courbe de prévision de rendement */}
-            <div className="mt-1 border-t border-white/10 pt-4">
+            <div className="mt-1 border-t border-ink/10 pt-4">
               <div className="flex items-center justify-between">
-                <p className="mono text-[9px] uppercase tracking-widest text-cream/45">Prévision de rendement · 6 saisons</p>
+                <p className="mono text-[9px] uppercase tracking-widest text-ink/45">Prévision de rendement · 6 saisons</p>
                 <p className="mono text-[10px] font-semibold text-leaf">▲ en hausse</p>
               </div>
               <svg viewBox={`0 0 ${CHART_W} ${CHART_H}`} className="mt-2 w-full">

@@ -34,10 +34,10 @@ export default function SoilCore() {
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.cos(phi);
       positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-      // gold → amber gradient with specks of green (living soil)
+      // Earth tones rather than glow: additive blending is invisible on paper.
       const t = Math.random();
-      if (t > 0.92) tmpC.setHSL(0.33, 0.75, 0.55); // living-matter green
-      else tmpC.setHSL(0.11 + Math.random() * 0.05, 0.85, 0.35 + Math.random() * 0.22);
+      if (t > 0.92) tmpC.setHSL(0.33, 0.6, 0.3); // living-matter green
+      else tmpC.setHSL(0.1 + Math.random() * 0.05, 0.7, 0.28 + Math.random() * 0.16);
       colors[i * 3] = tmpC.r;
       colors[i * 3 + 1] = tmpC.g;
       colors[i * 3 + 2] = tmpC.b;
@@ -50,7 +50,7 @@ export default function SoilCore() {
       vertexColors: true,
       transparent: true,
       opacity: 0.95,
-      blending: THREE.AdditiveBlending,
+      blending: THREE.NormalBlending,
       depthWrite: false,
       sizeAttenuation: true,
     });
@@ -61,19 +61,19 @@ export default function SoilCore() {
     const coreGeo = new THREE.IcosahedronGeometry(1.15, 1);
     const coreWire = new THREE.Mesh(
       coreGeo,
-      new THREE.MeshBasicMaterial({ color: 0xf5c544, wireframe: true, transparent: true, opacity: 0.85 })
+      new THREE.MeshBasicMaterial({ color: 0x9a6f06, wireframe: true, transparent: true, opacity: 0.65 })
     );
     scene.add(coreWire);
     const inner = new THREE.Mesh(
       new THREE.IcosahedronGeometry(0.58, 0),
-      new THREE.MeshBasicMaterial({ color: 0x7be08b, wireframe: true, transparent: true, opacity: 0.7 })
+      new THREE.MeshBasicMaterial({ color: 0x2f7d46, wireframe: true, transparent: true, opacity: 0.55 })
     );
     scene.add(inner);
 
     // ── Orbit ring ──
     const ring = new THREE.Mesh(
       new THREE.TorusGeometry(2.6, 0.012, 8, 128),
-      new THREE.MeshBasicMaterial({ color: 0xf5c544, transparent: true, opacity: 0.55 })
+      new THREE.MeshBasicMaterial({ color: 0xb5891f, transparent: true, opacity: 0.45 })
     );
     ring.rotation.x = Math.PI / 2.35;
     scene.add(ring);

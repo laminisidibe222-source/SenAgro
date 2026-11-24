@@ -132,6 +132,12 @@ parcels, analyses and subscriptions.
 
 - The Analyze engine is deterministic and offline: same parcel inputs, same
   recommendation. No model keys required.
-- Crop photography is hot-linked from Unsplash; replace the URLs in
-  `src/lib/crops.ts` before a commercial launch.
+- Theme: warm paper page (`#FAF8F2`), white cards, ink text, gold as fill and
+  `#7A5A08` as the readable accent on light backgrounds. All colours live in
+  `tailwind.config.js` and the `:root` variables in `src/index.css`; the 3D hero
+  uses non-additive blending because additive particles are invisible on white.
+- Photography is self-hosted: `public/crops/*.jpg` (7 crops) and
+  `public/scenes/*.jpg` (2 backgrounds), referenced by `src/lib/crops.ts` and the
+  auth/before-after panels. Sources are Wikimedia Commons — check and add the
+  per-file author/licence credits before a commercial launch.
 - Layout is checked at 390 / 1440 px with no horizontal overflow.

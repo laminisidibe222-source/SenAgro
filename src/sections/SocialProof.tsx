@@ -39,8 +39,8 @@ function Counter({ value, suffix, decimals }: { value: number; suffix: string; d
 
   return (
     <div ref={ref} className="text-center">
-      <div className="font-display text-5xl font-bold text-cream sm:text-6xl">
-        {display}<span className="text-gold-400">{suffix}</span>
+      <div className="font-display text-5xl font-bold text-ink sm:text-6xl">
+        {display}<span className="text-accent">{suffix}</span>
       </div>
     </div>
   );
@@ -48,7 +48,7 @@ function Counter({ value, suffix, decimals }: { value: number; suffix: string; d
 
 export default function SocialProof() {
   return (
-    <section aria-label="Impact" className="relative border-y border-white/5 bg-[#12110d] py-20">
+    <section aria-label="Impact" className="relative border-y border-ink/10 bg-card2 py-20">
       {/* Trame de fond — champ de blé numérique */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -62,7 +62,7 @@ export default function SocialProof() {
         {STATS.map((s) => (
           <div key={s.label} className="text-center">
             <Counter value={s.value} suffix={s.suffix} decimals={s.decimals} />
-            <p className="mono mt-3 text-[10px] uppercase tracking-[0.25em] text-cream/55">{s.label}</p>
+            <p className="mono mt-3 text-[10px] uppercase tracking-[0.25em] text-ink-soft">{s.label}</p>
           </div>
         ))}
       </div>
