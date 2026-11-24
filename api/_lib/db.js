@@ -34,6 +34,27 @@ export function getSql() {
   return runner;
 }
 
-export async function query(text, params = []) {
-  return getSql()(text, params);
+// Neon suspends idle computes; the first request after a pause can lose the
+// TCP/TLS handshake ("fetch failed" / ETIMEDOUT) before the statement lands.
+// Retrying is safe: the query never reached Postgres.
+const RETRYABLE = /fetch failed|ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|socket hang up/i;
+
+function isConnectionError(err) {
+  if (!err) return false;
+  if (err.code && ["ETIMEDOUT", "ECONNRESET", "ECONNREFUSED", "ENOTFOUND", "EAI_AGAIN"].includes(err.code)) return true;
+  return RETRYABLE.test(String(err.message ?? "")) || RETRYABLE.test(String(err.cause?.message ?? ""));
+}
+
+export async function query(text, params = [], { retries = 3 } = {}) {
+  let lastError;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await getSql()(text, params);
+    } catch (err) {
+      lastError = err;
+      if (attempt === retries || !isConnectionError(err)) throw err;
+      await new Promise((r) => setTimeout(r, 300 * 3 ** attempt)); // 300ms, 900ms, 2.7s
+    }
+  }
+  throw lastError;
 }

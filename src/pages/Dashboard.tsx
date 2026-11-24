@@ -127,7 +127,7 @@ export default function Dashboard() {
 
         <div className="mt-6 rounded-3xl border border-ink/10 p-6 text-sm text-ink-soft">
           <p className="mono text-[10px] uppercase tracking-widest text-ink/45">Comment ça marche</p>
-          <p className="mt-2">Chaque analyse est enregistrée dans votre base Neon (table <code className="text-accent">analyses</code>), liée à votre compte (<code className="text-accent">users</code>). Les montées de forfait proviennent des webhooks SasPay vers <code className="text-accent">subscriptions</code>.</p>
+          <p className="mt-2">Chaque analyse est conservée dans votre compte : vous pouvez la relire, la comparer saison après saison et la retrouver depuis n'importe quel appareil. Votre forfait est activé automatiquement dès que le paiement est confirmé — aucune démarche de votre part.</p>
         </div>
       </main>
     </div>
