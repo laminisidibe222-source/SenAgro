@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Logo } from "./Logo";
 import { Sprout, Menu, X, LogOut, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -30,12 +31,9 @@ export default function Navbar() {
           scrolled ? "mt-3 rounded-2xl border border-ink/10 bg-white/85 py-3 backdrop-blur-2xl" : "py-5"
         }`}
       >
-        <Link to="/" className="group flex items-center gap-2.5" aria-label="SenAgro — accueil">
-          <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 text-[#2a1f05] transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
-            <Sprout size={22} strokeWidth={2.2} />
-          </span>
-          <span className="font-display text-2xl font-bold tracking-tight text-ink">
-            Sen<span className="text-accent">Agro</span>
+        <Link to="/" className="group flex items-center" aria-label="SenAgro — accueil">
+          <span className="transition-transform duration-300 group-hover:-rotate-3">
+            <Logo size={38} />
           </span>
         </Link>
 

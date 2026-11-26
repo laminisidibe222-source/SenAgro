@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SenAgro">
-  <rect width="64" height="64" rx="14" fill="#1B1813"/>
-  <circle cx="36" cy="21" r="8.4" fill="#F5C544"/>
-  <path d="M10 47q26-15 52 0" stroke="#FAF8F2" stroke-width="5.2" stroke-linecap="round" fill="none"/>
+  <rect width="64" height="64" rx="14" fill="#EFE5CE"/>
+  <circle cx="36" cy="20" r="9" fill="#E5A834"/>
+  <g stroke="#1B1813" stroke-linecap="round" fill="none">
+    <path d="M9 41q27-14 54 0" stroke-width="5.6"/>
+    <path d="M18 51q15-8 30 0" stroke-width="4.6" opacity="0.85"/>
+  </g>
 </svg>

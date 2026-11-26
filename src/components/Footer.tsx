@@ -1,4 +1,5 @@
-import { Sprout, ArrowUp } from "lucide-react";
+import { ArrowUp } from "lucide-react";
+import { Logo } from "./Logo";
 
 export default function Footer() {
   const cols = [
@@ -11,12 +12,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-500 text-[#2a1f05]">
-                <Sprout size={19} strokeWidth={2.2} />
-              </span>
-              <span className="font-display text-xl font-bold text-ink">Sen<span className="text-accent">Agro</span></span>
-            </div>
+            <Logo size={34} />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">
               L'intelligence agricole à partir du sol, du climat et de la biologie — sachez quoi planter et où le planter.
             </p>

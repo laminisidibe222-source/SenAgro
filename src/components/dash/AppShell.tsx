@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, Plus, X } from "lucide-react";
 import SideRail from "./SideRail";
 import { Logo } from "../Logo";
 import type { PlanInfo } from "../../lib/api";
@@ -44,18 +44,21 @@ export default function AppShell({
     <div className="min-h-screen bg-[#EDE8DC] text-ink">
       <SideRail plan={plan} email={email} name={name} onSignOut={onSignOut} />
 
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-ink/8 bg-card/95 px-4 py-3 backdrop-blur-md lg:hidden">
-        <Link to="/dashboard" aria-label="Accueil du tableau de bord">
-          <Logo size={30} />
-        </Link>
+      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-ink/8 bg-card/95 px-3 py-2.5 backdrop-blur-md lg:hidden">
         <button
           onClick={() => setMenuOpen(true)}
           aria-label="Ouvrir le menu"
           aria-expanded={menuOpen}
-          className="grid h-10 w-10 place-items-center rounded-xl bg-ink text-white"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink text-white"
         >
           <Menu size={18} />
         </button>
+        <Link to="/dashboard" aria-label="Accueil du tableau de bord">
+          <Logo size={28} />
+        </Link>
+        <Link to="/analyze" className="btn-gold ml-auto !px-3 !py-2 !text-[11px] !text-[#241a05]">
+          <Plus size={13} /> Analyser
+        </Link>
       </header>
 
       {menuOpen && (

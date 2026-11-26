@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Logo } from "./Logo";
+import { Logo, LogoMark } from "./Logo";
 
 /**
  * Coquille des pages d'authentification : grande carte blanche sur fond sable,
@@ -28,12 +28,7 @@ export default function AuthLayout({
 
             <div className="relative flex h-full flex-col justify-between p-8 xl:p-10">
               <Link to="/" className="inline-flex w-fit items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-[10px] bg-white/10 ring-1 ring-white/15">
-                  <svg viewBox="0 0 56 56" width="22" height="22" fill="none" aria-hidden>
-                    <circle cx="32" cy="18" r="7.6" fill="#F5C544" />
-                    <path d="M9 41q23-13 46 0" stroke="#FAF8F2" strokeWidth="4.6" strokeLinecap="round" />
-                  </svg>
-                </span>
+                <LogoMark size={36} />
                 <span className="font-display text-[17px] font-bold tracking-tight text-white">
                   Sen<span className="text-gold-300">Agro</span>
                 </span>
