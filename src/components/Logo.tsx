@@ -1,18 +1,31 @@
-import { Sprout } from "lucide-react";
-
-/** Brand tile — gold gradient square with the sprout glyph. */
-export function LogoMark({ size = 36 }: { size?: number }) {
+/**
+ * SenAgro brand mark — a Sahel sun over two field furrows.
+ * Ink tile, gold sun over a cream horizon: readable at 24 px, no illustration.
+ */
+export function LogoMark({ size = 36, tone = "dark" }: { size?: number; tone?: "dark" | "light" }) {
+  const cream = tone === "light";
   return (
     <span
-      className="grid shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold-300 via-gold-400 to-gold-500 text-[#2a1f05] shadow-[0_6px_16px_-8px_rgba(180,138,24,0.9)]"
+      className={`grid shrink-0 place-items-center overflow-hidden rounded-[10px] ${
+        cream ? "bg-page ring-1 ring-ink/10" : "bg-ink ring-1 ring-white/10"
+      }`}
       style={{ width: size, height: size }}
+      aria-hidden
     >
-      <Sprout size={Math.round(size * 0.55)} strokeWidth={2.2} />
+      <svg viewBox="0 0 56 56" width={size} height={size} fill="none">
+        <circle cx="32" cy="18" r="7.6" fill="#F5C544" />
+        <path
+          d="M9 41q23-13 46 0"
+          stroke={cream ? "#1B1813" : "#FAF8F2"}
+          strokeWidth="4.6"
+          strokeLinecap="round"
+        />
+      </svg>
     </span>
   );
 }
 
-/** Wordmark — "Sen" in ink, "Agro" in gold, sized relative to the tile. */
+/** Wordmark — "Sen" in ink, "Agro" in gold. */
 export function Logo({ size = 36 }: { size?: number }) {
   return (
     <span className="flex items-center gap-2.5">

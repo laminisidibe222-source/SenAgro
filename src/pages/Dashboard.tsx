@@ -15,7 +15,7 @@ import AppShell from "../components/dash/AppShell";
 import StatCard from "../components/dash/StatCard";
 import ScoreRing from "../components/dash/ScoreRing";
 import ScoreBars from "../components/dash/ScoreBars";
-import { GOAL_LABELS, SOIL_LABELS, num, shortDate, type SavedAnalysis } from "../components/dash/types";
+import { GOAL_LABELS, num, shortDate, soilLabel, type SavedAnalysis } from "../components/dash/types";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, getPlanInfo, type PlanInfo } from "../lib/api";
 
@@ -76,6 +76,7 @@ export default function Dashboard() {
   const doneSteps = steps.filter((s) => s.done).length;
 
   const pending = fetching && analyses === null;
+  const isEmpty = rows.length === 0;
 
   const signOutNow = () => {
     signOut();
@@ -87,7 +88,12 @@ export default function Dashboard() {
   if (!user) return null;
 
   const firstName = (user.name || user.email.split("@")[0] || "").split(" ")[0];
-  const today = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const today = new Date().toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <AppShell plan={plan} email={user.email} onSignOut={signOutNow}>
@@ -106,13 +112,16 @@ export default function Dashboard() {
               <button
                 onClick={() => setReloadKey((k) => k + 1)}
                 aria-label="Rafraîchir les données"
-                className="grid h-10 w-10 place-items-center rounded-full border border-ink/10 text-ink/50 transition-colors hover:border-gold-400/50 hover:text-accent"
+                className="flex h-10 items-center gap-2 rounded-full border border-ink/10 px-3.5 text-xs font-medium text-ink/55 transition-colors hover:border-gold-400/50 hover:text-accent"
               >
-                <RefreshCw size={15} className={fetching ? "animate-spin" : ""} />
+                <RefreshCw size={14} className={fetching ? "animate-spin" : ""} />
+                <span className="hidden sm:inline">Actualiser</span>
               </button>
-              <Link to="/analyze" className="btn-gold !px-5 !py-2.5 text-sm">
-                <Sprout size={16} /> Nouvelle analyse
-              </Link>
+              {!isEmpty && (
+                <Link to="/analyze" className="btn-gold !px-5 !py-2.5 text-sm">
+                  <Sprout size={16} /> Nouvelle analyse
+                </Link>
+              )}
             </div>
           </div>
 
@@ -132,6 +141,87 @@ export default function Dashboard() {
                 <div key={i} className="h-40 animate-pulse rounded-3xl border border-ink/8 bg-card" />
               ))}
             </div>
+          ) : isEmpty ? (
+            <section className="mt-6 space-y-4">
+              <div className="relative overflow-hidden rounded-3xl bg-[linear-gradient(135deg,#171410_0%,#2A2419_52%,#3E3418_100%)] p-6 text-white shadow-[0_24px_50px_-32px_rgba(27,24,19,0.8)] sm:p-8">
+                <svg className="pointer-events-none absolute -right-20 -top-24 h-80 w-80 opacity-60" viewBox="0 0 200 200" aria-hidden>
+                  {[96, 74, 52].map((r) => (
+                    <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#F5C544" strokeOpacity={0.1 + (96 - r) / 500} strokeWidth="1" />
+                  ))}
+                  <circle cx="158" cy="46" r="15" fill="#F5C544" fillOpacity="0.9" />
+                </svg>
+
+                <div className="relative max-w-xl">
+                  <p className="mono text-[9px] uppercase tracking-[0.22em] text-white/45">Première parcelle</p>
+                  <h2 className="font-display mt-3 text-[1.7rem] font-bold leading-[1.15] sm:text-[2.4rem]">
+                    Une parcelle, un sol,
+                    <br />
+                    <span className="text-gold-300">une recommandation claire.</span>
+                  </h2>
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-white/70">
+                    Décrivez votre terrain une fois — culture, surface, sol, eau et budget. SenAgro calcule
+                    la culture la plus adaptée, le calendrier cultural et les marges attendues.
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <Link to="/analyze" className="btn-gold !px-5 !py-3 text-sm">
+                      <Sprout size={16} /> Analyser ma première parcelle
+                    </Link>
+                    <span className="mono text-[10px] uppercase tracking-[0.16em] text-white/60">
+                      3 minutes · résultat immédiat
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  {
+                    icon: Gauge,
+                    title: "Score de compatibilité",
+                    body: "Sur 100, calculé à partir du sol, du pH, de l'eau disponible et de la saison.",
+                  },
+                  {
+                    icon: CalendarDays,
+                    title: "Calendrier cultural daté",
+                    body: "Semis, fertilisation, traitements et récolte, positionnés sur vos dates réelles.",
+                  },
+                  {
+                    icon: CreditCard,
+                    title: "Budget et marge",
+                    body: "Intrants, main-d'œuvre et transport chiffrés, avec le revenu attendu.",
+                  },
+                ].map(({ icon: Icon, title, body }) => (
+                  <div key={title} className="rounded-3xl border border-ink/8 bg-card p-5">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-gold-400/15 text-accent">
+                      <Icon size={16} />
+                    </span>
+                    <p className="font-display mt-3 text-sm font-bold text-ink">{title}</p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink/50">{body}</p>
+                  </div>
+                ))}
+              </div>
+
+              <ol className="grid gap-3 rounded-3xl border border-ink/8 bg-card p-5 sm:grid-cols-3">
+                {[
+                  "Décrivez la parcelle : culture, sol, eau, budget.",
+                  "Recevez le score, le calendrier et la marge.",
+                  "Relancez après récolte pour suivre le sol.",
+                ].map((step, i) => (
+                  <li key={step} className="flex items-start gap-3">
+                    <span className="mono grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink/[0.06] text-[10px] font-bold text-ink/60">
+                      {i + 1}
+                    </span>
+                    <span className="text-xs leading-relaxed text-ink/55">{step}</span>
+                  </li>
+                ))}
+              </ol>
+
+              <p className="px-1 text-[11px] leading-relaxed text-ink/40">
+                Une analyse couvre une parcelle pour une saison. Vos résultats restent dans votre compte et
+                se comparent d'une saison à l'autre.
+              </p>
+            </section>
           ) : (
             <>
               {/* Carte principale + jauge */}
@@ -147,7 +237,7 @@ export default function Dashboard() {
 
                   <div className="relative flex h-full flex-col">
                     <div className="flex items-center justify-between">
-                      <p className="mono text-[9px] uppercase tracking-[0.22em] text-white/45">Votre exploitation</p>
+                      <p className="mono text-[9px] uppercase tracking-[0.22em] text-white/45">Première parcelle</p>
                       <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[10px] font-semibold text-gold-300">
                         {plan?.limits.label ?? "Pousse"}
                       </span>
@@ -171,15 +261,15 @@ export default function Dashboard() {
                         <p className="font-display mt-1 text-xl font-bold">{rows.length}</p>
                       </div>
                       <div>
-                        <p className="mono text-[8px] uppercase tracking-[0.18em] text-white/35">Score moyen</p>
+                        <p className="mono text-[8px] uppercase tracking-[0.18em] text-white/35">Compatibilité</p>
                         <p className="font-display mt-1 text-xl font-bold text-gold-300">
                           {stats.avg == null ? "—" : Math.round(stats.avg)}
                         </p>
                       </div>
                       <div>
-                        <p className="mono text-[8px] uppercase tracking-[0.18em] text-white/35">Quota</p>
+                        <p className="mono text-[8px] uppercase tracking-[0.18em] text-white/35">Dernière</p>
                         <p className="font-display mt-1 text-xl font-bold">
-                          {plan?.remaining == null ? "∞" : plan.remaining}
+                          {rows.length ? shortDate(rows[0].created_at) : "—"}
                         </p>
                       </div>
                     </div>
@@ -187,9 +277,9 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex h-full flex-col rounded-3xl border border-ink/8 bg-card p-6 lg:col-span-4">
-                  <p className="mono text-[9px] uppercase tracking-[0.2em] text-ink/40">Qualité du domaine</p>
+                  <p className="mono text-[9px] uppercase tracking-[0.2em] text-ink/40">Compatibilité moyenne</p>
                   <div className="mt-5">
-                    <ScoreRing value={stats.avg} caption="Moyenne des parcelles" />
+                    <ScoreRing value={stats.avg} caption="Moyenne de vos parcelles" />
                   </div>
                   {stats.crops.length > 0 && (
                     <div className="mt-5 flex flex-wrap justify-center gap-1.5 border-t border-ink/8 pt-4">
@@ -209,7 +299,7 @@ export default function Dashboard() {
                   icon={FlaskConical}
                   label="Analyses enregistrées"
                   value={String(rows.length)}
-                  sub={rows.length ? `Dernière le ${shortDate(rows[0].created_at)}` : "Lancez la première"}
+                  sub={rows.length ? `Dernière le ${shortDate(rows[0].created_at)}` : "Lancez votre première analyse"}
                   accent="ink"
                 />
                 <StatCard
@@ -222,10 +312,9 @@ export default function Dashboard() {
                   accent="gold"
                 />
                 <StatCard
-                  icon={CreditCard}
-                  label="Analyses restantes"
-                  value={plan?.remaining == null ? "∞" : String(plan.remaining)}
-                  suffix={plan?.remaining == null ? undefined : "ce mois"}
+                  icon={CalendarDays}
+                  label="Dernière analyse"
+                  value={rows.length ? shortDate(rows[0].created_at) : "—"}
                   sub={`${plan?.analysesLast30d ?? 0} utilisée${(plan?.analysesLast30d ?? 0) === 1 ? "" : "s"} sur 30 jours`}
                   accent="leaf"
                 />
@@ -240,7 +329,7 @@ export default function Dashboard() {
                       <p className="mt-0.5 text-xs text-ink/45">Chaque analyse notée sur 100, la cible est à 80.</p>
                     </div>
                     <span className="mono rounded-full bg-ink/[0.05] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-ink/45">
-                      {rows.length} point{rows.length === 1 ? "" : "s"}
+                      {rows.length} analyse{rows.length === 1 ? "" : "s"}
                     </span>
                   </div>
                   <div className="mt-4">
@@ -329,7 +418,7 @@ export default function Dashboard() {
                             <tr key={a.id} className="border-t border-ink/6">
                               <td className="py-3 font-medium text-ink">{a.parcel_name ?? "Parcelle"}</td>
                               <td className="py-3 text-ink/70">{a.recommendation?.crop ?? "—"}</td>
-                              <td className="py-3 text-ink/55">{SOIL_LABELS[a.soil_type ?? ""] ?? a.soil_type ?? "—"}</td>
+                              <td className="py-3 text-ink/55">{soilLabel(a.soil_type)}</td>
                               <td className="py-3 text-ink/55">{a.ph ?? "—"}</td>
                               <td className="py-3 text-ink/55">{a.hectares ? `${num(a.hectares)} ha` : "—"}</td>
                               <td className="py-3">

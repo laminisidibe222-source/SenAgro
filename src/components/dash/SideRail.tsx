@@ -76,7 +76,7 @@ export default function SideRail({
 
         <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-ink/10">
           <div
-            className={`h-full rounded-full transition-all duration-700 ${over || pct >= 100 ? "bg-rose-500" : "bg-gradient-to-r from-gold-300 to-gold-500"}`}
+            className={`h-full rounded-full transition-all duration-700 ${over ? "bg-rose-500" : pct >= 100 ? "bg-gold-500" : "bg-gradient-to-r from-gold-300 to-gold-500"}`}
             style={{ width: `${pct}%` }}
           />
         </div>

@@ -32,3 +32,11 @@ export function num(value: unknown): number {
 export function shortDate(iso: string): string {
   return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
 }
+
+/** Libellé lisible pour un type de sol, même inconnu. */
+export function soilLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  const known = SOIL_LABELS[value];
+  if (known) return known;
+  return value.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+}

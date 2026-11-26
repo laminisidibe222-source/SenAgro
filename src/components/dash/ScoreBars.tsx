@@ -27,7 +27,7 @@ export default function ScoreBars({ analyses }: { analyses: SavedAnalysis[] }) {
   const innerW = W - padL - 10;
   const innerH = H - padB - padT;
   const step = innerW / points.length;
-  const barW = Math.min(46, step * 0.5);
+  const barW = Math.min(34, step * 0.5);
   const y = (score: number) => padT + innerH - (Math.max(0, Math.min(100, score)) / 100) * innerH;
   const targetY = y(80);
 
