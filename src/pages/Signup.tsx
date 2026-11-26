@@ -1,8 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Leaf, ArrowRight, AlertCircle, Loader2, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { safeNext } from "../components/RouteGuards";
+import AuthLayout, { AuthHeading } from "../components/AuthLayout";
+
+const FIELD =
+  "w-full rounded-xl border border-ink/8 bg-[#F4F1E8] py-3.5 pl-11 pr-4 text-[13.5px] text-ink placeholder-ink/45 outline-none transition-colors focus:border-gold-400/70 focus:bg-white";
 
 export default function Signup() {
   const { signUp } = useAuth();
@@ -27,77 +31,112 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex min-h-screen bg-page text-ink">
-      {/* Formulaire */}
-      <div className="flex w-full flex-col justify-center px-6 py-12 sm:px-12 lg:w-1/2">
-        <Link to="/" className="mono mb-10 text-[10px] uppercase tracking-[0.3em] text-ink/40 hover:text-accent">
-          ← SenAgro
-        </Link>
-        <h1 className="font-display text-4xl font-bold text-ink">Plantez<br /><span className="text-gradient-gold">plus intelligemment.</span></h1>
-        <p className="mt-3 text-ink-soft">Créez votre compte — première analyse offerte, sans carte bancaire.</p>
+    <AuthLayout panel="signup">
+      <AuthHeading title="Créer un compte." subtitle="Première analyse offerte, sans carte bancaire. Deux minutes suffisent." />
 
-        {error && (
-          <div className="mt-6 flex gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-300">
-            <AlertCircle size={17} className="mt-0.5 shrink-0" />{error}
-          </div>
-        )}
-
-        <form onSubmit={submit} className="mt-8 space-y-4">
-          <div>
-            <label htmlFor="name" className="mono mb-1.5 block text-[10px] uppercase tracking-widest text-ink/50">Nom complet</label>
-            <div className="relative">
-              <User size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
-              <input id="name" type="text" required autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Aminata Diop" className="w-full rounded-2xl border border-ink/10 bg-white py-3.5 pl-12 pr-4 text-ink placeholder-ink/30 outline-none focus:border-gold-400/50" />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="email" className="mono mb-1.5 block text-[10px] uppercase tracking-widest text-ink/50">E-mail</label>
-            <div className="relative">
-              <Mail size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
-              <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@exploitation.com" className="w-full rounded-2xl border border-ink/10 bg-white py-3.5 pl-12 pr-4 text-ink placeholder-ink/30 outline-none focus:border-gold-400/50" />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="password" className="mono mb-1.5 block text-[10px] uppercase tracking-widest text-ink/50">Mot de passe <span className="text-ink/30">(8+ caractères)</span></label>
-            <div className="relative">
-              <Lock size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
-              <input id="password" type={showPw ? "text" : "password"} required minLength={8} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full rounded-2xl border border-ink/10 bg-white py-3.5 pl-12 pr-12 text-ink placeholder-ink/30 outline-none focus:border-gold-400/50" />
-              <button type="button" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "Masquer" : "Afficher"} className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/40 hover:text-ink">
-                {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
-              </button>
-            </div>
-          </div>
-          <button type="submit" disabled={loading} className="btn-gold w-full justify-center !py-4 disabled:opacity-60">
-            {loading ? <><Loader2 size={18} className="animate-spin" /> Création du compte…</> : (<>Créer mon compte <ArrowRight size={17} /></>)}
-          </button>
-        </form>
-
-        <p className="mt-6 text-sm text-ink/55">
-          Déjà un compte ?{" "}
-          <Link to="/login" className="font-semibold text-accent hover:text-accent">Se connecter</Link>
-        </p>
-      </div>
-
-      {/* Panneau visuel (desktop) */}
-      <div className="relative hidden overflow-hidden border-l border-ink/5 lg:block lg:w-1/2">
-        <div className="absolute inset-0 bg-[#141a10]" />
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-60"
-          style={{ backgroundImage: "url('/crops/wheat.jpg')" }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(16,15,12,0.9)_100%)]" />
-        <div className="relative flex h-full flex-col justify-end p-12">
-          <div className="grid h-12 w-12 place-items-center rounded-xl bg-gold-400 text-[#241a05]">
-            <Leaf size={24} strokeWidth={2.2} />
-          </div>
-          <h2 className="font-display mt-5 text-3xl font-bold leading-tight text-white">
-            Votre sol sait déjà<br />quoi pousser.
-          </h2>
-          <p className="mt-3 max-w-sm text-sm text-white/70">
-            Donnez-lui la bonne culture, au bon endroit, au bon moment — le reste suivra.
-          </p>
+      {error && (
+        <div className="mt-5 flex gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-[12px] text-rose-700" role="alert">
+          <AlertCircle size={15} className="mt-0.5 shrink-0" />
+          {error}
         </div>
+      )}
+
+      <form onSubmit={submit} className="mt-6 space-y-3">
+        <div className="relative">
+          <label htmlFor="name" className="sr-only">
+            Nom complet
+          </label>
+          <User size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35" />
+          <input
+            id="name"
+            type="text"
+            required
+            autoComplete="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Nom complet"
+            className={FIELD}
+          />
+        </div>
+
+        <div className="relative">
+          <label htmlFor="email" className="sr-only">
+            Adresse e-mail
+          </label>
+          <Mail size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35" />
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Adresse e-mail"
+            className={FIELD}
+          />
+        </div>
+
+        <div className="relative">
+          <label htmlFor="password" className="sr-only">
+            Mot de passe
+          </label>
+          <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35" />
+          <input
+            id="password"
+            type={showPw ? "text" : "password"}
+            required
+            minLength={8}
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Mot de passe (8 caractères minimum)"
+            className={`${FIELD} pr-12`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPw((v) => !v)}
+            aria-label={showPw ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+            className="absolute right-3.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg text-ink/40 hover:text-ink"
+          >
+            {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        </div>
+
+        <button type="submit" disabled={loading} className="btn-gold w-full justify-center !bg-gold-400 !bg-none !py-3.5 !text-[13.5px] !shadow-[0_10px_24px_-18px_rgba(180,138,24,0.9)] hover:!translate-y-0 hover:!scale-100 disabled:opacity-60">
+          {loading ? (
+            <>
+              <Loader2 size={17} className="animate-spin" /> Création…
+            </>
+          ) : (
+            <>
+              Créer mon compte <ArrowRight size={16} />
+            </>
+          )}
+        </button>
+      </form>
+
+      <div className="my-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.18em] text-ink/40">
+        <span className="h-px flex-1 bg-ink/15" />
+        ou
+        <span className="h-px flex-1 bg-ink/15" />
       </div>
-    </div>
+
+      <Link
+        to="/login"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-ink/10 bg-white py-3 text-[13px] font-semibold text-ink transition-colors hover:border-gold-400/60"
+      >
+        J'ai déjà un compte
+      </Link>
+
+      <p className="mt-5 text-center text-[11px] leading-relaxed text-ink/40">
+        Première analyse offerte sur le forfait Pousse · aucune carte demandée.
+      </p>
+
+      <p className="mt-5 text-center">
+        <Link to="/" className="mono text-[9px] uppercase tracking-[0.2em] text-ink/30 hover:text-ink/60">
+          ← Retour au site
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Sprout, ArrowLeft, ArrowRight, CheckCircle2, MapPin, FlaskConical, Droplets, Target, Lock } from "lucide-react";
-import Navbar from "../components/Navbar";
+import { Sprout, ArrowLeft, ArrowRight, CheckCircle2, Coins, MapPin, FlaskConical, Droplets, Target, Lock } from "lucide-react";
+import AppShell from "../components/dash/AppShell";
 import { CROPS } from "../lib/crops";
 import { useAuth } from "../context/AuthContext";
-import { apiFetch } from "../lib/api";
+import { apiFetch, getPlanInfo, type PlanInfo } from "../lib/api";
 
 const SOILS = [
   { id: "loam", label: "Limon profond", note: "Équilibré, drainé, riche" },
@@ -14,14 +14,9 @@ const SOILS = [
 ];
 const GOALS = [
   { id: "max_yield", label: "Rendement maximal", icon: Target },
-  { id: "cash", label: "Meilleur prix / ha", icon: CoinsIconFallback },
+  { id: "cash", label: "Meilleur prix / ha", icon: Coins },
   { id: "sustainability", label: "Santé du sol d'abord", icon: Sprout },
 ];
-// Icône locale pour éviter une dépendance supplémentaire
-function CoinsIconFallback({ size = 18, className = "" }: { size?: number; className?: string }) {
-  return <span className={className} style={{ fontSize: size }}>💰</span>;
-}
-
 interface Recommendation {
   crop: string;
   reason: string;
@@ -62,7 +57,8 @@ function decide(ph: number, soil: string, goal: string): Recommendation {
 
 export default function Analyze() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const [plan, setPlan] = useState<PlanInfo | null>(null);
   const [ph, setPh] = useState("6.2");
   const [moisture, setMoisture] = useState("41");
   const [ha, setHa] = useState("10");
@@ -72,6 +68,17 @@ export default function Analyze() {
   const [loading, setLoading] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [quotaError, setQuotaError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    getPlanInfo().then(({ data, error }) => {
+      if (alive && !error) setPlan(data);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [user]);
 
   const run = () => {
     setLoading(true);
@@ -111,19 +118,26 @@ export default function Analyze() {
   };
 
   return (
-    <div className="min-h-screen bg-page text-ink">
-      <Navbar />
-      <main className="mx-auto max-w-4xl px-5 pb-24 pt-28 sm:px-8">
-        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-ink/50 hover:text-accent">
-          <ArrowLeft size={16} /> Retour
+    <AppShell
+      plan={plan}
+      email={user?.email ?? ""}
+      name={user?.name}
+      onSignOut={() => {
+        signOut();
+        navigate("/");
+      }}
+    >
+      <main className="pb-10">
+        <Link to="/dashboard" className="inline-flex items-center gap-2 text-[12px] text-ink/50 hover:text-accent">
+          <ArrowLeft size={15} /> Retour au tableau de bord
         </Link>
-        <h1 className="font-display mt-6 text-4xl font-bold text-ink">Analyse de <span className="text-gradient-gold">terrain</span></h1>
-        <p className="mt-2 max-w-lg text-ink-soft">Entrez les données de votre parcelle — SenAgro renvoie la culture optimale, le raisonnement, et un plan de culture sur 12 semaines.</p>
+        <h1 className="font-display mt-4 text-[26px] font-bold text-ink sm:text-[30px]">Analyse de <span className="text-gradient-gold">terrain</span></h1>
+        <p className="mt-2 max-w-lg text-[13px] text-ink-soft">Entrez les données de votre parcelle — SenAgro renvoie la culture optimale, le raisonnement, et un plan de culture sur 12 semaines.</p>
 
         {!result ? (
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
             {/* Gauche : entrées */}
-            <div className="glass rounded-3xl p-6">
+            <div className="rounded-2xl bg-card p-5 ring-1 ring-ink/[0.07]">
               <p className="mono flex items-center gap-2 text-[10px] uppercase tracking-widest text-accent"><FlaskConical size={13} /> Échantillon de sol</p>
               <div className="mt-5 grid grid-cols-3 gap-3">
                 {[
@@ -162,21 +176,21 @@ export default function Analyze() {
             </div>
 
             {/* Droite : synthèse + CTA */}
-            <div className="flex flex-col justify-between gap-6">
-              <div className="glass-gold rounded-3xl p-6">
+            <div className="flex flex-col gap-4">
+              <div className="rounded-2xl bg-card2 p-5 ring-1 ring-ink/[0.06]">
                 <p className="mono text-[10px] uppercase tracking-widest text-accent">Pourquoi SenAgro</p>
                 <ul className="mt-4 space-y-3 text-sm text-ink/85">
                   {[
                     "Sol + climat + biologie dans un seul modèle",
                     "Localisé pour les zones agro d'Afrique de l'Ouest",
-                    "+18 % de rendement moyen sur les parcelles ré-analysées",
-                    "Rafraîchi chaque saison — gratuitement",
+                    "Un score de compatibilité sur 100, explicable",
+                    "Archive par saison pour comparer vos parcelles",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-2"><CheckCircle2 size={15} className="mt-0.5 shrink-0 text-accent" />{t}</li>
                   ))}
                 </ul>
               </div>
-              <button onClick={run} disabled={loading} className="btn-gold justify-center !py-4 text-lg disabled:opacity-60">
+              <button onClick={run} disabled={loading} className="btn-gold w-full justify-center !bg-gold-400 !bg-none !py-3.5 !text-[13.5px] hover:!translate-y-0 hover:!scale-100 disabled:opacity-60">
                 {loading ? "Analyse du profil de sol…" : (<><Sprout size={20} /> Générer la recommandation <ArrowRight size={18} /></>)}
               </button>
               <p className="mono text-center text-[9px] uppercase tracking-widest text-ink/35">Gratuit · Sans carte bancaire</p>
@@ -184,7 +198,7 @@ export default function Analyze() {
           </div>
         ) : (
           /* ── Résultat ── */
-          <div className="mt-10 overflow-hidden rounded-3xl border border-gold-400/30 bg-card">
+          <div className="mt-6 overflow-hidden rounded-2xl bg-card ring-1 ring-gold-400/30">
             <div className="border-b border-ink/10 bg-gradient-to-r from-gold-400/15 via-gold-400/5 to-transparent p-6">
               <p className="mono text-[10px] uppercase tracking-[0.3em] text-accent">Recommandation SenAgro</p>
               <div className="mt-2 flex items-end justify-between gap-6">
@@ -231,6 +245,6 @@ export default function Analyze() {
           </div>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }
