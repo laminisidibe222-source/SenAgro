@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sprout, ArrowLeft, ArrowRight, CheckCircle2, Coins, MapPin, FlaskConical, Droplets, Target, Lock } from "lucide-react";
 import AppShell from "../components/dash/AppShell";
-import { CROPS } from "../lib/crops";
+import { recommend } from "../lib/recommend";
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, getPlanInfo, type PlanInfo } from "../lib/api";
 
@@ -24,35 +24,6 @@ interface Recommendation {
   water: string;
   pH: string;
   plan: string[];
-}
-
-function decide(ph: number, soil: string, goal: string): Recommendation {
-  const soilBonus = soil === "silt" ? 12 : soil === "loam" ? 10 : soil === "clay" ? 6 : 0;
-  const ranked = CROPS.map((c) => {
-    const [lo, hi] = c.soil;
-    const phScore = ph >= lo && ph <= hi ? 40 : Math.max(0, 40 - Math.abs(ph - (lo + hi) / 2) * 9);
-    let goalBonus = 0;
-    if (goal === "max_yield") goalBonus = c.yieldIdx / 10;
-    if (goal === "cash") goalBonus = c.id === "peanut" || c.id === "corn" ? 9 : c.id === "soybean" ? 7 : 2;
-    if (goal === "sustainability") goalBonus = c.id === "soybean" || c.id === "millet" ? 9 : 3;
-    return { c, total: phScore + soilBonus + goalBonus };
-  }).sort((a, b) => b.total - a.total);
-
-  const best = ranked[0];
-  return {
-    crop: best.c.name,
-    reason: `${best.c.tagline}. ${best.c.best}`,
-    score: Math.min(98, Math.round(best.total)),
-    water: best.c.water,
-    pH: `${best.c.soil[0]}–${best.c.soil[1]}`,
-    plan: [
-      `Semaines 1–2 · Préparation : labour profond + chaulage au pH ${((best.c.soil[0] + best.c.soil[1]) / 2).toFixed(1)}`,
-      `Semaine 3 · Semis de ${best.c.name} avec inoculant, lignes à 75 cm`,
-      `Semaines 5–6 · Premier désherbage + apport d'engrais NPK fractionné`,
-      `Semaines 10–12 · Contrôle du stress hydrique — irriguer sous 35 %`,
-      `Récolte · À maturité physiologique ; restituer les résidus au sol`,
-    ],
-  };
 }
 
 export default function Analyze() {
@@ -85,7 +56,7 @@ export default function Analyze() {
     setSavedNote(null);
     setQuotaError(null);
     setTimeout(() => {
-      const rec = decide(parseFloat(ph) || 6.2, soil, goal);
+      const rec = recommend(parseFloat(ph) || 6.2, parseFloat(moisture) || 41, soil as 'loam' | 'clay' | 'sandy' | 'silt', goal);
       setResult(rec);
       setLoading(false);
       try {
