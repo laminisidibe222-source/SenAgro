@@ -11,9 +11,10 @@ const NAV = [
 ];
 
 /**
- * Account frame from the order-dashboard reference: one floating white card
- * with an ink sidebar, a header strip inside the content and a light canvas.
- * Below `lg` the sidebar slides in from the left, with the trigger on that side.
+ * Account frame from the bills-dashboard reference: a large light card on the
+ * sand canvas, with the ink sidebar floating inside it (gap on every side) and
+ * the content column beside it. Below `lg` the same panel slides in from the
+ * left, with the trigger on that same side.
  */
 export default function AppShell({
   plan,
@@ -72,14 +73,14 @@ export default function AppShell({
             to={to}
             onClick={onClose}
             className={({ isActive }) =>
-              `relative flex min-h-10 items-center gap-3 rounded-full py-2.5 pl-4 pr-3 text-[13px] font-semibold transition-colors ${
-                isActive ? "bg-card text-ink shadow-[0_10px_26px_-18px_rgba(0,0,0,0.65)]" : "text-white/65 hover:bg-white/10 hover:text-white"
+              `flex min-h-10 items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-semibold transition-colors ${
+                isActive ? "bg-white/15 text-white" : "text-white/60 hover:bg-white/[0.07] hover:text-white"
               }`
             }
           >
             {({ isActive }) => (
               <>
-                <Icon size={16} className={isActive ? "text-accent" : "text-white/45"} />
+                <Icon size={16} className={isActive ? "text-gold-300" : "text-white/40"} />
                 {label}
               </>
             )}
@@ -87,42 +88,41 @@ export default function AppShell({
         ))}
       </nav>
 
-      <div className="mt-6 rounded-2xl bg-white/[0.06] p-3.5">
-        <div className="flex items-center justify-between">
-          <span className="mono text-[9px] uppercase tracking-[0.18em] text-white/40">Forfait</span>
-          <span className="rounded-full bg-gold-400 px-2 py-0.5 text-[10px] font-bold text-[#241a05]">
-            {plan?.limits.label ?? "Pousse"}
-          </span>
-        </div>
-        <p className="mt-1.5 text-[11.5px] font-semibold text-white/80">
-          {limit === null
-            ? "Analyses illimitées"
-            : over
-              ? `${used} analyses ce mois · quota ${limit}`
-              : `${used} / ${limit} analyse${limit === 1 ? "" : "s"} ce mois`}
+      <div className="relative mt-6 overflow-hidden rounded-2xl bg-white/[0.08] p-4">
+        <svg className="pointer-events-none absolute right-2 top-2 opacity-25" width="52" height="52" aria-hidden>
+          {Array.from({ length: 5 }).map((_, r) =>
+            Array.from({ length: 5 }).map((__, c) => (
+              <circle key={`${r}-${c}`} cx={r * 11 + 4} cy={c * 11 + 4} r="1.2" fill="#F5C544" />
+            )),
+          )}
+        </svg>
+        <p className="relative text-[12px] font-bold leading-snug text-white">
+          {plan && plan.plan !== "free" ? "Votre exploitation suit son plan." : "Débloquez la saison entière."}
         </p>
-        <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/15">
+        <p className="relative mt-1 text-[10.5px] text-white/50">
+          {limit === null ? "Analyses illimitées" : over ? `${used} analyses ce mois` : `${used} / ${limit} analyses ce mois`}
+        </p>
+        <div className="relative mt-2 h-1 overflow-hidden rounded-full bg-white/15">
           <div
             className={`h-full rounded-full ${over ? "bg-rose-400" : pct >= 100 ? "bg-gold-500" : "bg-gold-400"}`}
             style={{ width: `${pct}%` }}
           />
         </div>
-        {!(plan && plan.plan !== "free") && (
-          <Link
-            to="/pricing"
-            onClick={onClose}
-            className="mt-2.5 inline-flex w-full items-center justify-center gap-1 rounded-full bg-gold-400 px-3 py-1.5 text-[11px] font-bold text-[#241a05] hover:bg-gold-300"
-          >
-            Passer à Pro <ArrowUpRight size={11} />
-          </Link>
-        )}
+        <Link
+          to={plan && plan.plan !== "free" ? "/pricing" : "/pricing"}
+          onClick={onClose}
+          className="relative mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-card px-3 py-2 text-[11px] font-bold text-accent hover:bg-gold-300"
+        >
+          {plan && plan.plan !== "free" ? "Gérer l'abonnement" : "Passer Pro"}
+          <ArrowUpRight size={11} />
+        </Link>
       </div>
 
       <button
         onClick={onSignOut}
-        className="mt-2 flex min-h-10 w-full items-center gap-3 rounded-full py-2.5 pl-4 pr-3 text-left text-[13px] font-semibold text-white/65 transition-colors hover:bg-white/10 hover:text-white"
+        className="mt-2 flex min-h-10 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-semibold text-white/60 transition-colors hover:bg-white/[0.07] hover:text-white"
       >
-        <LogOut size={16} className="text-white/45" />
+        <LogOut size={16} className="text-white/40" />
         Déconnexion
       </button>
 
@@ -133,7 +133,7 @@ export default function AppShell({
           </span>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[12px] font-bold text-white">{name || email.split("@")[0]}</p>
-            <p className="truncate text-[10px] text-white/40">Forfait {plan?.limits.label ?? "Pousse"}</p>
+            <p className="truncate text-[10px] text-white/40">{email}</p>
           </div>
         </div>
       </div>
@@ -143,19 +143,19 @@ export default function AppShell({
   return (
     <div className="min-h-screen bg-[#EDE8DC] text-ink">
       {/* mobile bar */}
-      <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-ink/8 bg-card/95 px-3 py-2.5 backdrop-blur-md lg:hidden">
+      <header className="sticky top-0 z-40 flex items-center gap-2 border-b border-ink/8 bg-[#F8F5EC]/95 px-3 py-2.5 backdrop-blur-md lg:hidden">
         <button
           onClick={() => setOpen(true)}
           aria-label="Ouvrir le menu"
           aria-expanded={open}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-ink text-white"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink text-white"
         >
           <Menu size={18} />
         </button>
         <Link to="/dashboard" aria-label="SenAgro — accueil">
           <Logo size={28} />
         </Link>
-        <Link to="/analyze" className="btn-gold ml-auto !px-3 !py-2 !bg-gold-400 !bg-none !text-[11px] !text-[#241a05]">
+        <Link to="/analyze" className="btn-gold ml-auto !bg-gold-400 !bg-none !px-3 !py-2 !text-[11px] !text-[#241a05]">
           <Plus size={13} /> Analyser
         </Link>
       </header>
@@ -168,21 +168,21 @@ export default function AppShell({
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/45 backdrop-blur-sm"
           />
-          <div className="absolute inset-y-0 left-0 flex w-[82%] max-w-[292px] flex-col bg-ink p-5 text-white shadow-2xl">
+          <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-[300px] flex-col bg-ink p-5 text-white shadow-2xl">
             {panel(() => setOpen(false))}
           </div>
         </div>
       )}
 
-      <div className="lg:p-4">
-        <div className="mx-auto flex w-full max-w-[1440px] overflow-hidden bg-card lg:min-h-[calc(100vh-32px)] lg:rounded-[24px] lg:shadow-[0_40px_100px_-70px_rgba(27,24,19,0.7)]">
-          <aside className="sticky top-4 hidden h-[calc(100vh-32px)] w-[228px] shrink-0 flex-col bg-ink px-5 py-6 text-white lg:flex">
-            {panel()}
+      <div className="lg:p-5">
+        <div className="mx-auto flex w-full max-w-[1440px] bg-[#F8F5EC] lg:min-h-[calc(100vh-40px)] lg:rounded-[26px] lg:p-3 lg:shadow-[0_40px_100px_-70px_rgba(27,24,19,0.75)]">
+          <aside className="hidden w-[236px] shrink-0 lg:block">
+            <div className="sticky top-3 flex h-[calc(100vh-64px)] flex-col rounded-[20px] bg-ink px-4 py-5 text-white">
+              {panel()}
+            </div>
           </aside>
 
-          <div className="min-w-0 flex-1">
-            <div className="px-4 pb-10 pt-5 sm:px-7 sm:pt-6">{children}</div>
-          </div>
+          <main className="min-w-0 flex-1 px-4 pb-8 pt-4 sm:px-6 lg:px-5 lg:pb-5 lg:pt-4">{children}</main>
         </div>
       </div>
     </div>

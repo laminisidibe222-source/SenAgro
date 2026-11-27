@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  ArrowUpRight,
+  Bell,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Droplets,
   FlaskConical,
-  MapPin,
   Plus,
   RefreshCw,
   Search,
@@ -19,21 +20,29 @@ import { GOAL_LABELS, num, soilLabel, type SavedAnalysis } from "../components/d
 import { useAuth } from "../context/AuthContext";
 import { apiFetch, getPlanInfo, type PlanInfo } from "../lib/api";
 
+const PAGE_SIZE = 5;
+
 type Tab = "all" | "recent" | "old";
 
-const PAGE_SIZE = 6;
-
-function scoreTone(score: number | null) {
-  if (score == null) return { bg: "bg-ink/[0.06]", text: "text-ink/55" };
-  if (score >= 80) return { bg: "bg-leaf/10", text: "text-leaf" };
-  if (score >= 60) return { bg: "bg-gold-400/25", text: "text-accent" };
-  return { bg: "bg-ink/[0.07]", text: "text-ink/60" };
+function status(a: SavedAnalysis) {
+  const s = a.fit_score ?? 0;
+  if (s >= 80) return { label: "Adapté", cls: "bg-leaf/10 text-leaf" };
+  if (s >= 60) return { label: "À ajuster", cls: "bg-gold-400/25 text-accent" };
+  return { label: "Limité", cls: "bg-ink/[0.07] text-ink/55" };
 }
 
+const fmtPh = (v: string | number | null) =>
+  v == null || v === ""
+    ? "—"
+    : Number(v).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+
 /**
- * Dossiers page, laid out like the order-admin reference: a header with the
- * counts, pill tabs, a search field, card-shaped table rows (the opened one
- * turns ink) and a paginated footer. Colours stay the warm paper + gold system.
+ * Dossiers page from the bills-dashboard reference: title with square action
+ * buttons, a wide search pill, then one table card whose rows are tall, carry
+ * checkboxes and a status pill, and expand into an attached detail panel.
  */
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -47,6 +56,7 @@ export default function Dashboard() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [opened, setOpened] = useState<string | null>(null);
+  const [checked, setChecked] = useState<string[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -97,13 +107,11 @@ export default function Dashboard() {
     setPage(1);
   }, [tab, query]);
 
-  const recentCount = rows.filter((a) => new Date(a.created_at).getTime() >= Date.now() - 30 * 86_400_000).length;
-  const dateRange = useMemo(() => {
-    if (!rows.length) return null;
-    const times = rows.map((a) => new Date(a.created_at).getTime()).sort((a, b) => a - b);
-    const fmt = (t: number) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
-    return { first: fmt(times[0]), last: fmt(times[times.length - 1]) };
-  }, [rows]);
+  const allChecked = slice.length > 0 && slice.every((a) => checked.includes(a.id));
+  const toggleAll = () =>
+    setChecked(allChecked ? checked.filter((id) => !slice.some((a) => a.id === id)) : [...new Set([...checked, ...slice.map((a) => a.id)])]);
+  const toggleOne = (id: string) =>
+    setChecked((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
 
   const signOutNow = () => {
     signOut();
@@ -114,22 +122,23 @@ export default function Dashboard() {
 
   const pending = fetching && analyses === null;
   const empty = analyses !== null && rows.length === 0;
+  const recentCount = rows.filter((a) => new Date(a.created_at).getTime() >= Date.now() - 30 * 86_400_000).length;
 
   const tabs: { id: Tab; label: string; count: number }[] = [
-    { id: "all", label: "Tous les dossiers", count: rows.length },
+    { id: "all", label: "Tous", count: rows.length },
     { id: "recent", label: "Récents", count: recentCount },
     { id: "old", label: "Plus anciens", count: rows.length - recentCount },
   ];
 
   return (
     <AppShell plan={plan} email={user.email} name={user.name} onSignOut={signOutNow}>
-      {/* header */}
+      {/* title row */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-[24px] font-bold leading-tight tracking-tight text-ink sm:text-[27px]">
+          <h1 className="font-display text-[25px] font-bold leading-tight tracking-tight text-ink sm:text-[28px]">
             Dossiers de récolte
           </h1>
-          <p className="mt-1 text-[12px] text-ink/45">
+          <p className="mt-1 text-[11.5px] text-ink/45">
             {rows.length} dossier{rows.length === 1 ? "" : "s"} ·{" "}
             {stats.hectares.toLocaleString("fr-FR", { maximumFractionDigits: 1 })} ha suivis
             {stats.avg != null && ` · compatibilité moyenne ${stats.avg}/100`}
@@ -139,14 +148,49 @@ export default function Dashboard() {
           <button
             onClick={() => setReloadKey((k) => k + 1)}
             aria-label="Rafraîchir les dossiers"
-            className="grid h-9 w-9 place-items-center rounded-lg border border-ink/10 text-ink/50 transition-colors hover:border-gold-400/60 hover:text-accent"
+            className="relative grid h-10 w-10 place-items-center rounded-xl bg-ink text-white"
           >
-            <RefreshCw size={15} className={fetching ? "animate-spin" : ""} />
+            <RefreshCw size={16} className={fetching ? "animate-spin" : ""} />
+            <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-gold-400 ring-2 ring-[#F8F5EC]" />
           </button>
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-ink text-[11px] font-extrabold text-gold-300">
-            {(user.name || user.email).slice(0, 2).toUpperCase()}
-          </span>
+          <Link
+            to="/analyze"
+            aria-label="Nouvelle analyse"
+            className="grid h-10 w-10 place-items-center rounded-xl bg-card text-accent ring-1 ring-ink/8 transition-colors hover:bg-white"
+          >
+            <Plus size={17} />
+          </Link>
+          <Link
+            to="/pricing"
+            aria-label="Forfaits"
+            className="grid h-10 w-10 place-items-center rounded-xl bg-gold-400 text-[#241a05] transition-colors hover:bg-gold-300"
+          >
+            <Bell size={16} />
+          </Link>
         </div>
+      </div>
+
+      {/* search row */}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="relative min-w-0 flex-1 sm:max-w-[430px]">
+          <label htmlFor="dossier-search" className="sr-only">
+            Rechercher un dossier
+          </label>
+          <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink/35" />
+          <input
+            id="dossier-search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Rechercher un dossier…"
+            className="h-10 w-full rounded-full border border-ink/8 bg-card pl-10 pr-4 text-[12.5px] text-ink placeholder-ink/35 outline-none focus:border-gold-400/70 focus:bg-white"
+          />
+        </div>
+        <Link
+          to="/analyze"
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-4 text-[12px] font-semibold text-accent ring-1 ring-ink/8 hover:bg-white"
+        >
+          <Sprout size={14} /> Nouvelle parcelle
+        </Link>
       </div>
 
       {failed && (
@@ -157,16 +201,16 @@ export default function Dashboard() {
       )}
 
       {pending && (
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 space-y-2 rounded-2xl bg-card p-3">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-[62px] animate-pulse rounded-xl bg-card2" />
+            <div key={i} className="h-[64px] animate-pulse rounded-xl bg-card2" />
           ))}
         </div>
       )}
 
       {empty && (
         <div className="mt-4 grid gap-3 lg:grid-cols-[1.25fr_1fr]">
-          <section className="relative overflow-hidden rounded-2xl bg-ink p-6 text-white sm:p-8">
+          <section className="relative overflow-hidden rounded-2xl bg-ink p-6 text-white sm:p-7">
             <svg className="pointer-events-none absolute -right-14 -top-16 h-64 w-64 opacity-40" viewBox="0 0 200 200" aria-hidden>
               {[92, 70, 48].map((r) => (
                 <circle key={r} cx="100" cy="100" r={r} fill="none" stroke="#F5C544" strokeOpacity={0.2} strokeWidth="1" />
@@ -174,7 +218,7 @@ export default function Dashboard() {
               <circle cx="150" cy="48" r="12" fill="#F5C544" fillOpacity="0.9" />
             </svg>
             <p className="mono relative text-[9px] uppercase tracking-[0.22em] text-white/45">Premier dossier</p>
-            <h2 className="font-display relative mt-2 text-[24px] font-bold leading-tight sm:text-[30px]">
+            <h2 className="font-display relative mt-2 text-[24px] font-bold leading-tight">
               Une parcelle, un sol,
               <br />
               <span className="text-gold-300">une recommandation claire.</span>
@@ -192,17 +236,15 @@ export default function Dashboard() {
             {[
               { icon: Target, t: "Score de compatibilité", d: "Sur 100, à partir du sol, du pH et de l'eau." },
               { icon: CalendarDays, t: "Calendrier cultural", d: "Semis, fertilisation et récolte datés." },
-              { icon: MapPin, t: "Surface suivie", d: "Chaque parcelle garde ses hectares." },
+              { icon: FlaskConical, t: "Échantillon de sol", d: "pH, humidité et texture conservés." },
             ].map(({ icon: Icon, t, d }) => (
-              <div key={t} className="rounded-xl border border-ink/8 bg-card p-3.5">
-                <div className="flex items-start gap-3">
-                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold-400/15 text-accent">
-                    <Icon size={15} />
-                  </span>
-                  <div>
-                    <p className="text-[12.5px] font-bold text-ink">{t}</p>
-                    <p className="mt-0.5 text-[11px] leading-relaxed text-ink/45">{d}</p>
-                  </div>
+              <div key={t} className="flex items-start gap-3 rounded-xl bg-card p-3.5 ring-1 ring-ink/8">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold-400/15 text-accent">
+                  <Icon size={15} />
+                </span>
+                <div>
+                  <p className="text-[12.5px] font-bold text-ink">{t}</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-ink/45">{d}</p>
                 </div>
               </div>
             ))}
@@ -211,176 +253,208 @@ export default function Dashboard() {
       )}
 
       {!pending && !empty && (
-        <>
-          {/* tabs + range */}
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-b border-ink/8">
-            <div className="flex items-center gap-4">
+        <div className="mt-3 rounded-2xl bg-card p-2 ring-1 ring-ink/[0.06] sm:p-3">
+          {/* tabs inside the card, like the reference's header strip */}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-1.5 pb-2">
+            <div className="flex items-center gap-1.5">
               {tabs.map((item) => {
                 const on = tab === item.id;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setTab(item.id)}
-                    className={`relative -mb-px pb-2.5 pt-1 text-[12.5px] font-semibold transition-colors ${
-                      on ? "text-ink" : "text-ink/40 hover:text-ink/70"
+                    className={`rounded-lg px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors ${
+                      on ? "bg-ink text-white" : "text-ink/45 hover:bg-card2 hover:text-ink"
                     }`}
                   >
                     {item.label}
-                    <span className="ml-1.5 text-[10px] font-bold text-ink/30">{item.count}</span>
-                    {on && <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-gold-500" />}
+                    <span className={`ml-1.5 text-[10px] font-bold ${on ? "text-white/50" : "text-ink/30"}`}>{item.count}</span>
                   </button>
                 );
               })}
             </div>
-
-            <div className="mb-2 flex items-center gap-2">
-              <div className="relative">
-                <label htmlFor="dossier-search" className="sr-only">
-                  Rechercher un dossier
-                </label>
-                <Search size={13} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/35" />
-                <input
-                  id="dossier-search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Parcelle ou culture"
-                  className="h-8 w-[168px] rounded-full border border-ink/10 bg-card2 pl-7 pr-3 text-[11.5px] text-ink placeholder-ink/35 outline-none focus:border-gold-400/70 focus:bg-white"
-                />
-              </div>
-              {dateRange && (
-                <span className="hidden items-center gap-1 rounded-full bg-card2 px-2.5 py-1 text-[10.5px] text-ink/50 sm:flex">
-                  <CalendarDays size={11} className="text-accent" />
-                  {dateRange.first} → {dateRange.last}
-                </span>
-              )}
-            </div>
+            <span className="mono flex items-center gap-1 text-[10px] uppercase tracking-[0.12em] text-ink/30">
+              <CalendarDays size={11} className="text-accent" /> 30 derniers jours
+            </span>
           </div>
 
-          {/* table head */}
-          <div className="mono mt-3 hidden grid-cols-[64px_1.5fr_1fr_80px_70px_84px_32px] gap-3 px-3 text-[9px] uppercase tracking-[0.12em] text-ink/35 md:grid">
-            <span>Réf.</span>
+          {/* column header */}
+          <div className="mono hidden grid-cols-[28px_1.6fr_92px_96px_1fr_80px_72px_24px] items-center gap-3 border-y border-ink/[0.06] px-3 py-2 text-[9px] uppercase tracking-[0.12em] text-ink/35 md:grid">
+            <input
+              type="checkbox"
+              checked={allChecked}
+              onChange={toggleAll}
+              aria-label="Sélectionner cette page"
+              className="h-3.5 w-3.5 accent-[#1B1813]"
+            />
             <span>Parcelle</span>
-            <span>Sol · pH</span>
+            <span>Statut</span>
+            <span>Date</span>
+            <span>Sol</span>
             <span>Surface</span>
             <span>Score</span>
-            <span>Date</span>
             <span />
           </div>
 
-          {/* rows */}
-          <ul className="mt-1.5 space-y-1.5">
+          <ul>
             {slice.map((a) => {
               const isOpen = opened === a.id;
-              const tone = scoreTone(a.fit_score);
+              const st = status(a);
               return (
-                <li key={a.id}>
+                <li key={a.id} className="border-b border-ink/[0.05] last:border-0">
                   <div
-                    className={`rounded-xl border transition-all ${
-                      isOpen ? "border-transparent bg-ink text-white shadow-[0_18px_36px_-26px_rgba(27,24,19,0.9)]" : "border-ink/8 bg-card"
+                    className={`grid grid-cols-[1fr_auto] items-center gap-3 px-2 py-3 md:grid-cols-[28px_1.6fr_92px_96px_1fr_80px_72px_24px] md:px-3 ${
+                      isOpen ? "rounded-t-xl bg-ink text-white" : ""
                     }`}
                   >
+                    <input
+                      type="checkbox"
+                      checked={checked.includes(a.id)}
+                      onChange={() => toggleOne(a.id)}
+                      aria-label={`Sélectionner ${a.parcel_name ?? "ce dossier"}`}
+                      className="hidden h-3.5 w-3.5 accent-[#F5C544] md:block"
+                    />
+
                     <button
                       onClick={() => setOpened(isOpen ? null : a.id)}
                       aria-expanded={isOpen}
-                      className="grid w-full grid-cols-[1fr_auto] items-center gap-3 px-3 py-2.5 text-left md:grid-cols-[64px_1.5fr_1fr_80px_70px_84px_32px]"
+                      className="flex min-w-0 items-center gap-2.5 text-left"
                     >
-                      <span className={`mono hidden text-[10.5px] md:block ${isOpen ? "text-white/50" : "text-ink/35"}`}>
-                        #{a.id.slice(0, 4)}
+                      <span
+                        className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-[11px] font-extrabold ${
+                          isOpen ? "bg-white/15 text-white" : "bg-gold-400/20 text-accent"
+                        }`}
+                      >
+                        {(a.recommendation?.crop ?? "?").slice(0, 1)}
                       </span>
-
-                      <span className="flex min-w-0 items-center gap-2.5">
-                        <span
-                          className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-[11px] font-extrabold ${
-                            isOpen ? "bg-white/15 text-white" : "bg-gold-400/20 text-accent"
-                          }`}
-                        >
-                          {(a.recommendation?.crop ?? "?").slice(0, 1)}
+                      <span className="min-w-0">
+                        <span className={`block truncate text-[12.5px] font-bold ${isOpen ? "text-white" : "text-ink"}`}>
+                          {a.parcel_name ?? "Parcelle"}
                         </span>
-                        <span className="min-w-0">
-                          <span className={`block truncate text-[12.5px] font-bold ${isOpen ? "text-white" : "text-ink"}`}>
-                            {a.parcel_name ?? "Parcelle"}
-                          </span>
-                          <span className={`block truncate text-[10px] ${isOpen ? "text-white/55" : "text-ink/40"} md:hidden`}>
-                            {a.recommendation?.crop ?? "—"} · {soilLabel(a.soil_type)} · {shortDateOrDash(a)}
-                          </span>
-                        </span>
-                      </span>
-
-                      <span className={`hidden truncate text-[11.5px] md:block ${isOpen ? "text-white/60" : "text-ink/50"}`}>
-                        {soilLabel(a.soil_type)} · {a.ph ?? "—"}
-                      </span>
-
-                      <span className={`hidden text-[11.5px] font-semibold tabular-nums md:block ${isOpen ? "text-white/70" : "text-ink/60"}`}>
-                        {a.hectares ? `${num(a.hectares).toLocaleString("fr-FR")} ha` : "—"}
-                      </span>
-
-                      <span className="hidden md:block">
-                        <span
-                          className={`inline-flex min-w-9 justify-center rounded-full px-2 py-0.5 text-[10.5px] font-bold ${
-                            isOpen ? "bg-white/15 text-white" : `${tone.bg} ${tone.text}`
-                          }`}
-                        >
-                          {a.fit_score ?? "—"}
-                        </span>
-                      </span>
-
-                      <span className={`hidden text-[11px] md:block ${isOpen ? "text-white/60" : "text-ink/40"}`}>
-                        {shortDateOrDash(a)}
-                      </span>
-
-                      <span className="flex items-center justify-end gap-2">
-                        <span
-                          className={`grid h-7 w-7 place-items-center rounded-full ${
-                            isOpen ? "bg-white/15 text-white" : "bg-card2 text-ink/45"
-                          }`}
-                        >
-                          <ChevronDown size={14} className={isOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+                        <span className={`block truncate text-[10px] ${isOpen ? "text-white/55" : "text-ink/40"}`}>
+                          {a.recommendation?.crop ?? "—"} · {soilLabel(a.soil_type)} · {fmtDate(a.created_at)}
                         </span>
                       </span>
                     </button>
 
-                    {isOpen && (
-                      <div className="grid gap-3 border-t border-white/10 px-3 pb-3 pt-3 sm:grid-cols-3">
-                        <Detail icon={<FlaskConical size={12} />} label="pH" value={String(a.ph ?? "—")} />
-                        <Detail icon={<Droplets size={12} />} label="Humidité" value={`${a.moisture_pct ?? "—"}%`} />
-                        <Detail icon={<Target size={12} />} label="Objectif" value={GOAL_LABELS[a.goal ?? ""] ?? "—"} />
-                        <div className="sm:col-span-3">
-                          <p className="mono text-[9px] uppercase tracking-[0.16em] text-white/40">Recommandation</p>
-                          <p className="mt-1 text-[12px] leading-relaxed text-white/75">
-                            <span className="font-bold text-white">{a.recommendation?.crop ?? "—"}</span>
-                            {a.recommendation?.reason ? ` — ${a.recommendation.reason}` : ""}
+                    <span className="hidden md:block">
+                      <span className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-bold ${isOpen ? "bg-white/15 text-white" : st.cls}`}>
+                        {st.label}
+                      </span>
+                    </span>
+
+                    <span className={`hidden text-[11px] md:block ${isOpen ? "text-white/60" : "text-ink/45"}`}>
+                      {fmtDate(a.created_at)}
+                    </span>
+
+                    <span className={`hidden truncate text-[11px] md:block ${isOpen ? "text-white/60" : "text-ink/50"}`}>
+                      {soilLabel(a.soil_type)} · {fmtPh(a.ph)}
+                    </span>
+
+                    <span className={`hidden text-[11.5px] font-semibold tabular-nums md:block ${isOpen ? "text-white/75" : "text-ink/60"}`}>
+                      {a.hectares ? `${num(a.hectares).toLocaleString("fr-FR")} ha` : "—"}
+                    </span>
+
+                    <span className={`hidden text-[12px] font-extrabold tabular-nums md:block ${isOpen ? "text-gold-300" : "text-ink"}`}>
+                      {a.fit_score ?? "—"}
+                    </span>
+
+                    <button
+                      onClick={() => setOpened(isOpen ? null : a.id)}
+                      aria-label={isOpen ? "Replier" : "Déplier"}
+                      className={`ml-auto grid h-7 w-7 place-items-center rounded-full ${
+                        isOpen ? "bg-white/15 text-white" : "bg-card2 text-ink/40"
+                      }`}
+                    >
+                      <ChevronDown size={14} className={isOpen ? "rotate-180 transition-transform" : "transition-transform"} />
+                    </button>
+                  </div>
+
+                  {isOpen && (
+                    <div className="grid gap-3 rounded-b-xl bg-white p-3 sm:grid-cols-3 sm:divide-x sm:divide-ink/8">
+                      <div className="sm:pr-3">
+                        <p className="mono text-[9px] uppercase tracking-[0.16em] text-ink/35">Culture recommandée</p>
+                        <p className="mt-1.5 text-[15px] font-bold text-ink">{a.recommendation?.crop ?? "—"}</p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-ink/55">
+                          {a.recommendation?.reason ?? "Aucun motif enregistré."}
+                        </p>
+                        <p className="mono mt-2 inline-flex items-center gap-1 rounded-full bg-gold-400/15 px-2 py-0.5 text-[9px] uppercase tracking-[0.1em] text-accent">
+                          <Target size={9} /> {GOAL_LABELS[a.goal ?? ""] ?? "—"}
+                        </p>
+                      </div>
+
+                      <div className="sm:px-3">
+                        <p className="mono text-[9px] uppercase tracking-[0.16em] text-ink/35">Échantillon de sol</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <div className="rounded-lg bg-card2 px-2.5 py-1.5">
+                            <p className="flex items-center gap-1 text-[9px] uppercase tracking-[0.1em] text-ink/35">
+                              <FlaskConical size={9} /> pH
+                            </p>
+                            <p className="text-[12.5px] font-bold text-ink">{fmtPh(a.ph)}</p>
+                          </div>
+                          <div className="rounded-lg bg-card2 px-2.5 py-1.5">
+                            <p className="flex items-center gap-1 text-[9px] uppercase tracking-[0.1em] text-ink/35">
+                              <Droplets size={9} /> Humidité
+                            </p>
+                            <p className="text-[12.5px] font-bold text-ink">{a.moisture_pct ?? "—"}%</p>
+                          </div>
+                        </div>
+                        <p className="mt-2 text-[11px] text-ink/50">
+                          {soilLabel(a.soil_type)} · {a.hectares ? `${num(a.hectares).toLocaleString("fr-FR")} ha` : "—"}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-col justify-between sm:pl-3">
+                        <div className="space-y-1 text-[11px]">
+                          <p className="flex items-center justify-between gap-2">
+                            <span className="text-ink/40">Réf.</span>
+                            <span className="mono font-semibold text-ink">#{a.id.slice(0, 6)}</span>
+                          </p>
+                          <p className="flex items-center justify-between gap-2">
+                            <span className="text-ink/40">Statut</span>
+                            <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold ${st.cls}`}>{st.label}</span>
+                          </p>
+                          <p className="flex items-center justify-between gap-2">
+                            <span className="text-ink/40">Date payée</span>
+                            <span className="font-semibold text-ink">{fmtDate(a.created_at)}</span>
                           </p>
                         </div>
-                        <div className="sm:col-span-3">
+                        <div className="mt-2 flex items-end justify-between border-t border-ink/8 pt-2 sm:border-0 sm:pt-0">
+                          <div>
+                            <p className="mono text-[9px] uppercase tracking-[0.14em] text-ink/35">Score</p>
+                            <p className="font-display text-[22px] font-bold leading-none text-ink">
+                              {a.fit_score ?? "—"}
+                              <span className="text-[11px] font-semibold text-ink/35">/100</span>
+                            </p>
+                          </div>
                           <Link
                             to="/analyze"
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center gap-1.5 rounded-full bg-gold-400 px-3 py-1.5 text-[11px] font-bold text-[#241a05]"
+                            className="inline-flex items-center gap-1 rounded-full bg-ink px-2.5 py-1.5 text-[10.5px] font-bold text-gold-300"
                           >
-                            <Plus size={12} /> Nouvelle analyse
+                            Relancer <ArrowUpRight size={11} />
                           </Link>
                         </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </li>
               );
             })}
           </ul>
 
           {/* footer */}
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-[11px] text-ink/40">
-              Affichage {from}–{to} sur {filtered.length}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-2 pt-2 sm:px-3">
+            <p className="text-[10.5px] text-ink/40">
+              Affichage {from}–{to} sur <span className="font-bold text-ink/70">{filtered.length}</span>
             </p>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={current === 1}
                 aria-label="Page précédente"
-                className="grid h-7 w-7 place-items-center rounded-lg border border-ink/10 text-ink/50 disabled:opacity-35"
+                className="grid h-7 w-7 place-items-center rounded-lg text-ink/45 disabled:opacity-35"
               >
-                <ChevronLeft size={13} />
+                <ChevronLeft size={14} />
               </button>
               {Array.from({ length: pages }).slice(0, 6).map((_, i) => {
                 const n = i + 1;
@@ -389,8 +463,8 @@ export default function Dashboard() {
                   <button
                     key={n}
                     onClick={() => setPage(n)}
-                    className={`h-7 min-w-7 rounded-lg px-1.5 text-[11px] font-bold ${
-                      on ? "bg-ink text-white" : "text-ink/50 hover:bg-card2"
+                    className={`grid h-7 w-7 place-items-center rounded-lg text-[11px] font-bold ${
+                      on ? "bg-ink text-white" : "bg-card2 text-ink/50 hover:bg-ink/10"
                     }`}
                   >
                     {n}
@@ -401,30 +475,14 @@ export default function Dashboard() {
                 onClick={() => setPage((p) => Math.min(pages, p + 1))}
                 disabled={current === pages}
                 aria-label="Page suivante"
-                className="grid h-7 w-7 place-items-center rounded-lg border border-ink/10 text-ink/50 disabled:opacity-35"
+                className="grid h-7 w-7 place-items-center rounded-lg text-ink/45 disabled:opacity-35"
               >
-                <ChevronRight size={13} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </AppShell>
-  );
-}
-
-function shortDateOrDash(a: SavedAnalysis) {
-  return new Date(a.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
-}
-
-function Detail({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="rounded-lg bg-white/[0.07] px-2.5 py-2">
-      <p className="mono flex items-center gap-1.5 text-[8.5px] uppercase tracking-[0.16em] text-white/40">
-        {icon}
-        {label}
-      </p>
-      <p className="mt-0.5 text-[12px] font-bold text-white">{value}</p>
-    </div>
   );
 }
