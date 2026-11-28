@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
+// Only facts we can stand behind: nothing here is a traction or yield claim.
 const STATS = [
-  { value: 2.4, suffix: " M", label: "Hectares analysés", decimals: 1 },
-  { value: 18, suffix: " %", label: "Hausse moyenne du rendement", decimals: 0 },
-  { value: 3400, suffix: "", label: "Exploitations conseillées", decimals: 0 },
-  { value: 32, suffix: " %", label: "Réduction de la consommation d'eau", decimals: 0 },
+  { value: 20, suffix: "", label: "Cultures couvertes", decimals: 0 },
+  { value: 4, suffix: "", label: "Signaux lus par analyse", decimals: 0 },
+  { value: 12, suffix: "", label: "Semaines de plan cultural", decimals: 0 },
+  { value: 100, suffix: " %", label: "Scores expliqués", decimals: 0 },
 ];
 
 function Counter({ value, suffix, decimals }: { value: number; suffix: string; decimals: number }) {
@@ -48,7 +49,7 @@ function Counter({ value, suffix, decimals }: { value: number; suffix: string; d
 
 export default function SocialProof() {
   return (
-    <section aria-label="Impact" className="relative border-y border-ink/10 bg-card2 py-20">
+    <section aria-label="Ce que SenAgro fait" className="relative border-y border-ink/10 bg-card2 py-20">
       {/* Trame de fond — champ de blé numérique */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.16]"

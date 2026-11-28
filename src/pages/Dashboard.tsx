@@ -280,7 +280,7 @@ export default function Dashboard() {
                   <p className="mono mt-1 text-[8.5px] uppercase tracking-[0.14em] text-white/50">Compatibilité</p>
                   <p className="text-[18px] font-extrabold leading-none tabular-nums">{stats.scores.at(-1) ?? "—"}</p>
                   <p className="mt-0.5 text-[9.5px] text-white/50">
-                    Moyenne {stats.avgScore} · cible 80
+                    Moyenne {stats.avgScore} sur vos dossiers
                   </p>
                 </div>
                 <div className="px-3">
@@ -382,7 +382,9 @@ export default function Dashboard() {
                   </div>
                   <Ring value={stats.avgScore} />
                 </div>
-                <p className="mt-2 text-[10px] text-white/50">Moyenne de vos parcelles, objectif 80.</p>
+                <p className="mt-2 text-[10px] text-white/50">
+                  Moyenne calculée sur {rows.length} dossier{rows.length === 1 ? "" : "s"} analysé{rows.length === 1 ? "" : "s"}.
+                </p>
               </section>
 
               <section className="rounded-2xl bg-card p-4 ring-1 ring-ink/[0.07]">

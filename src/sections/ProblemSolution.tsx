@@ -82,7 +82,7 @@ export default function ProblemSolution() {
               La terre vous envoie<br />des signaux.<br /><span className="text-gradient-gold-bright">SenAgro vous donne la traduction.</span>
             </h2>
             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-gold-400/40 bg-black/35 px-4 py-2 text-xs font-semibold text-gold-300 backdrop-blur-sm">
-              <Leaf size={14} /> +18 % de rendement moyen · −32 % de gaspillage d'eau
+              <Leaf size={14} /> Un score expliqué : pH, sol, humidité, objectif
             </div>
           </div>
         </div>

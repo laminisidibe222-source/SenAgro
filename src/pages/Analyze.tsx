@@ -152,10 +152,10 @@ export default function Analyze() {
                 <p className="mono text-[10px] uppercase tracking-widest text-accent">Pourquoi SenAgro</p>
                 <ul className="mt-4 space-y-3 text-sm text-ink/85">
                   {[
-                    "Sol + climat + biologie dans un seul modèle",
-                    "Localisé pour les zones agro d'Afrique de l'Ouest",
-                    "Un score de compatibilité sur 100, explicable",
-                    "Archive par saison pour comparer vos parcelles",
+                    "Sol, humidité et objectif dans un seul calcul",
+                    "Calibré pour 20 cultures d'Afrique de l'Ouest",
+                    "Un score sur 100, expliqué facteur par facteur",
+                    "Dossiers conservés pour comparer vos parcelles",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-2"><CheckCircle2 size={15} className="mt-0.5 shrink-0 text-accent" />{t}</li>
                   ))}

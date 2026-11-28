@@ -17,10 +17,10 @@ interface Parcel {
 const PARCELS: Parcel[] = [
   { id: "A1", name: "Parcelle A1 · Crête Nord", ha: 42, ph: 6.2, health: 87, crop: ["Soja", "Arachide"], yieldSeries: [58, 62, 66, 71, 78, 84], sustainability: 82, soil: "Limon argileux" },
   { id: "B2", name: "Parcelle B2 · Méandre de la rivière", ha: 28, ph: 5.8, health: 74, crop: ["Maïs", "Sorgho"], yieldSeries: [52, 55, 59, 63, 70, 76], sustainability: 68, soil: "Limon alluvial" },
-  { id: "C3", name: "Parcelle C3 · Ancienne terrasse", ha: 61, ph: 6.9, health: 91, crop: ["Blé", "Sorgho"], yieldSeries: [64, 68, 75, 79, 85, 92], sustainability: 90, soil: "Limon profond" },
-  { id: "D4", name: "Parcelle D4 · Collines de sable", ha: 35, ph: 5.6, health: 58, crop: ["Millet perlé", "Arachide"], yieldSeries: [40, 43, 47, 51, 56, 62], sustainability: 74, soil: "Dune sableuse" },
+  { id: "C3", name: "Parcelle C3 · Ancienne terrasse", ha: 61, ph: 6.9, health: 91, crop: ["Maïs", "Sorgho"], yieldSeries: [64, 68, 75, 79, 85, 92], sustainability: 90, soil: "Limon profond" },
+  { id: "D4", name: "Parcelle D4 · Collines de sable", ha: 35, ph: 5.6, health: 58, crop: ["Mil", "Arachide"], yieldSeries: [40, 43, 47, 51, 56, 62], sustainability: 74, soil: "Dune sableuse" },
   { id: "E5", name: "Parcelle E5 · Zones humides Est", ha: 24, ph: 6.4, health: 66, crop: ["Riz", "Maïs"], yieldSeries: [49, 54, 58, 64, 69, 73], sustainability: 61, soil: "Bas-fond argileux" },
-  { id: "F6", name: "Parcelle F6 · Plateau sud", ha: 53, ph: 6.6, health: 83, crop: ["Arachide", "Blé"], yieldSeries: [60, 65, 70, 76, 82, 88], sustainability: 85, soil: "Latérite rouge" },
+  { id: "F6", name: "Parcelle F6 · Plateau sud", ha: 53, ph: 6.6, health: 83, crop: ["Arachide", "Maïs"], yieldSeries: [60, 65, 70, 76, 82, 88], sustainability: 85, soil: "Latérite rouge" },
 ];
 
 const CHART_W = 260, CHART_H = 90;
@@ -63,9 +63,15 @@ export default function LandIntel() {
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="mb-12 max-w-2xl">
-          <p className="mono mb-4 text-[10px] uppercase tracking-[0.3em] text-accent">Intelligence foncière · Delta Verde</p>
+          <p className="mono mb-4 text-[10px] uppercase tracking-[0.3em] text-accent">
+            Intelligence foncière · démonstration
+          </p>
           <h2 className="font-display text-3xl font-bold text-ink sm:text-5xl">
             Cliquez sur une parcelle. <span className="text-gradient-gold">Lisez son avenir.</span>
+            <span className="mt-4 block max-w-lg font-sans text-sm font-normal leading-relaxed text-ink/60">
+              Jeu de démonstration, pas des données réelles : les parcelles ci-dessous illustrent la lecture
+              que SenAgro fait de vos propres relevés.
+            </span>
           </h2>
         </div>
 

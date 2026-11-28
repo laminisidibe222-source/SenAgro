@@ -37,7 +37,7 @@ export default function Hero() {
         </h1>
 
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink/75">
-          SenAgro analyse <span className="text-ink">le sol, le climat et la biologie</span> pour vous dire
+          SenAgro analyse <span className="text-ink">votre sol et votre eau</span> pour vous dire
           exactement quoi planter — et où le planter.
         </p>
 
@@ -51,7 +51,7 @@ export default function Hero() {
         </div>
 
         <p className="mono mt-6 text-[10px] uppercase tracking-[0.25em] text-ink/60">
-          2,4 M d'hectares cartographiés · 14 zones agroécologiques
+          20 cultures · pH, humidité, sol, objectif · chaque score est expliqué
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export default function Hero() {
       <div className="absolute bottom-8 right-4 z-10 hidden sm:block">
         <div className="glass animate-float-slow w-72 rounded-2xl p-4">
           <div className="flex items-center justify-between border-b border-ink/10 pb-2">
-            <span className="mono text-[10px] uppercase tracking-widest text-accent">Télémétrie en direct</span>
+            <span className="mono text-[10px] uppercase tracking-widest text-accent">Exemple de lecture</span>
             <span className="mono h-2 w-2 rounded-full bg-leaf animate-pulse-soft" />
           </div>
           <div className="mt-3 space-y-2 text-sm">
@@ -71,6 +71,7 @@ export default function Hero() {
             <div className="mono text-[9px] uppercase tracking-widest text-accent">Culture optimale</div>
             <div className="font-display text-lg font-bold text-ink">Soja <span className="text-accent">→</span></div>
           </div>
+          <p className="mono mt-2 text-[8px] uppercase tracking-widest text-ink/40">Illustration · vos chiffres dès la 1re analyse</p>
         </div>
       </div>
     </section>

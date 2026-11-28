@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
             <Logo size={34} />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">
-              L'intelligence agricole à partir du sol, du climat et de la biologie — sachez quoi planter et où le planter.
+              L'intelligence agricole à partir de votre sol, de votre eau et de votre objectif — sachez quoi planter et où le planter.
             </p>
           </div>
           {cols.map((c) => (

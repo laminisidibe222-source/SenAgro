@@ -13,33 +13,51 @@ const PLANS = [
     name: "Pousse",
     price: "0",
     unit: "à vie",
-    desc: "Premiers pas dans l'agriculture de précision.",
-    features: ["1 analyse / mois", "Recommandation culture + pH", "Plan de base sur 12 semaines"],
+    desc: "Pour tester le moteur sur une parcelle.",
+    features: [
+      "1 analyse tous les 30 jours",
+      "Score expliqué : pH, sol, humidité, objectif",
+      "Plan cultural daté sur 12 semaines",
+      "Dossiers conservés dans votre compte",
+    ],
     cta: "Commencer gratuitement",
     popular: false,
     payable: false,
+    comingSoon: false,
   },
   {
     id: "pro",
     name: "Professionnel",
     price: "9 000",
     unit: "XOF / mois",
-    desc: "Pour les producteurs décidés à gagner.",
-    features: ["Analyses illimitées de parcelles", "Plan de saison complet + liste d'intrants", "Ré-étalonnage hebdomadaire", "Support prioritaire d'un agronome"],
+    desc: "Analyses illimitées, même moteur, mêmes explications.",
+    features: [
+      "Analyses illimitées (fenêtre de 30 jours)",
+      "Score expliqué, facteur par facteur",
+      "Plan cultural daté sur 12 semaines",
+      "Historique de tous vos dossiers",
+    ],
     cta: "Passer à Pro",
     popular: true,
     payable: true,
+    comingSoon: false,
   },
   {
     id: "elite",
     name: "Domaine",
     price: "25 000",
     unit: "XOF / mois",
-    desc: "Pour agro-entreprises et coopératives.",
-    features: ["Tout le plan Pro", "Portefeuille multi-parcelles (20 lots)", "Survols NDVI satellite", "Audit sol trimestriel sur site", "Agronome dédié"],
-    cta: "Passer à Domaine",
+    desc: "Prévu pour les coopératives. Pas encore commercialisé.",
+    features: [
+      "Tout le forfait Professionnel",
+      "Multi-parcelles et rôles d'équipe — à venir",
+      "Export PDF de vos dossiers — à venir",
+      "Accompagnement agronome — à venir",
+    ],
+    cta: "Bientôt disponible",
     popular: false,
-    payable: true,
+    payable: false,
+    comingSoon: true,
   },
 ];
 
@@ -112,6 +130,10 @@ export default function Pricing() {
         <p className="mono text-center text-[10px] uppercase tracking-[0.3em] text-accent">Tarifs</p>
         <h1 className="font-display mt-4 text-center text-4xl font-bold text-ink sm:text-6xl">De belles terres,<br /><span className="text-gradient-gold">une meilleure science.</span></h1>
         <p className="mx-auto mt-4 max-w-md text-center text-ink-soft">Payez avec SasPay — Wave, Orange Money ou carte bancaire. Forfait activé dès le paiement.</p>
+        <p className="mx-auto mt-3 max-w-xl text-center text-[12.5px] leading-relaxed text-ink/55">
+          Nous ne vendons que ce qui fonctionne : les lignes sans la mention « à venir » sont disponibles
+          aujourd'hui. Tous les forfaits utilisent le même moteur — seul le nombre d'analyses change.
+        </p>
 
         {plan && (
           <p className="mono mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/10 px-4 py-2 text-[10px] uppercase tracking-widest text-accent">
@@ -173,6 +195,13 @@ export default function Pricing() {
                     className={`mt-7 flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition-all disabled:opacity-60 ${p.popular ? "bg-gold-400 text-[#241a05] hover:scale-[1.02]" : "border border-gold-400/40 bg-gold-400/10 text-accent hover:bg-gold-400/20"}`}
                   >
                     {loading === p.id ? <><Loader2 size={17} className="animate-spin" /> Ouverture de SasPay…</> : <>{p.cta} <ArrowRight size={15} /></>}
+                  </button>
+                ) : p.comingSoon ? (
+                  <button
+                    disabled
+                    className="mt-7 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-ink/10 py-3.5 text-sm font-semibold text-ink/40"
+                  >
+                    {p.cta}
                   </button>
                 ) : (
                   <button onClick={() => navigate("/analyze")} className="btn-ghost mt-7 justify-center !py-3 text-sm">{p.cta}</button>

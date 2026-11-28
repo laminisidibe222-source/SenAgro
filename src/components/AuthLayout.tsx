@@ -44,7 +44,7 @@ export default function AuthLayout({
                   <span className="text-gold-300">à vous dire.</span>
                 </h2>
                 <p className="mt-3 max-w-[300px] text-[13px] leading-relaxed text-white/70">
-                  SenAgro traduit le sol, le climat et la biologie en décisions — pour chaque hectare,
+                  SenAgro traduit votre sol et votre eau en décisions — pour chaque hectare,
                   chaque saison.
                 </p>
 
